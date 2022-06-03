@@ -1,0 +1,5 @@
+An architecture based on ResNet50 but trained on cochleagrams. Adversarial examples are generating during the training process constrained with an L2 norm on the cochleagram =1. 
+
+The input to the network is a cochleagram representation rather than an image (rectangular rather than square). Square filters are still used throughout the network. 
+
+

@@ -1,0 +1,1529 @@
+<!--
+Visual experiment to run 16-way Image Classification task using MOCO categories.
+Jenelle Feather (May 2021)
+
+This example runs the experiment used in the VOneAlexNet vs. LowPassAlexNet 
+experiment (Figure 7 of Feather et al 2022). See `model_analysis_folders/all_model_info.py`
+for other model configuration locations. 
+
+To run on turk or in the sandbox, copy this entire file into the "Design Layout" 
+box and change the base_src_path, json_config_name, and image_folder_name_server 
+to match that experiment you are running (and change the payment amounts if using 
+a different number of stimuli). 
+-->
+
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- Use some helpers from Tim Brady -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://timbrady.org/turk/TimTurkTools.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/experiment.css">
+<link rel="stylesheet" type="text/css" href="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/sceneObject.css">
+<script>
+
+/* Setup global experiment info */
+var curTrial = 0;
+var categoryResponse = "";
+// var categoryResponse_idx = "";
+var displayTime;
+
+/* other data used for stimuli */
+
+/* Change the src path to run with your own stimuli */
+var base_src_path = "https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/";
+/* Change the json-config to match the experiment you want to run */ 
+var json_config_name = "FOR_WEB_vision_experiment_9_load_experiment_info.json"
+const image_folder_name_server = 'experiment9_images/'
+/*
+Checks if the html is on turk -- remove the check for the mturk form because we
+will save directly on turk and run in the sandbox for debugging.
+*/
+function IsOnTurk() {
+  try {
+    return ((window.location.host.indexOf('mturk')!=-1) ||
+      (top != self && window.parent.location.host.indexOf("mturk") != -1));
+  } catch(err) {
+    // insecure content trying to access https://turk probably, so say yes:
+    return true;
+  }
+}
+
+
+/*
+12 demo stimuli to present and use to filter out participants who don't match
+inlab performance.
+*/
+
+var demo_stim = [
+  // One of each type for the demo to start
+  ['demo/demo_square_stim_from_small_16_category_imagenet/25_bottle_n04560804_15365.png', 'bottle'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/60_keyboard_n04505470_1461.png', 'keyboard'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/20_boat_n03344393_12310.png', 'boat'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/69_knife_n03041632_11700.png', 'knife'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/42_chair_n02791124_9050.png', 'chair'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/72_oven_n04111531_20511.png', 'oven'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/0_airplane_n02690373_15966.png', 'airplane'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/11_bicycle_n02835271_14862.png', 'bicycle'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/5_bear_n02134418_1800.png', 'bear'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/75_truck_n03796401_9245.png', 'truck'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/30_car_n04285008_6439.png', 'car'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/15_bird_n01798484_717.png', 'bird'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/55_elephant_n02504013_9775.png', 'elephant'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/35_cat_n02123597_7473.png', 'cat'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/45_clock_n02708093_1557.png', 'clock'],
+  ['demo/demo_square_stim_from_small_16_category_imagenet/50_dog_n02097474_17865.png', 'dog'],
+  // These are the trials that were included in lab. No feedback for these.
+  ['demo/weird_original_images/00_00_3_airplane_n02690373_4015_DEMO.JPEG', 'airplane'],
+  ['demo/weird_original_images/01_01_10_bicycle_n02835271_6921_DEMO.JPEG', 'bicycle'],
+  ['demo/weird_original_images/02_02_18_bird_n02056570_2145_DEMO.JPEG', 'bird'],
+  ['demo/weird_original_images/03_03_26_bottle_n02823428_7157_DEMO.JPEG', 'bottle'],
+  ['demo/weird_original_images/04_04_41_chair_n03376595_4850_DEMO.JPEG', 'chair'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Conv2d_1a_3x3_TA__iadam25000_ilbfgs0_seed542/10_10_10_bicycle_n03792782_360_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Conv2d_1a_3x3_iadam25000_ilbfgs0_loss_reduction0.000000_synth_pixel_matching.png', 'bicycle'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Conv2d_2b_3x3_TA__iadam25000_ilbfgs0_seed542/20_20_20_boat_n04273569_325_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Conv2d_2b_3x3_iadam25000_ilbfgs0_loss_reduction0.000004_synth_pixel_matching.png', 'boat'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Conv2d_3b_1x1_TA__iadam25000_ilbfgs0_seed542/40_40_40_chair_n03376595_4806_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Conv2d_3b_1x1_iadam25000_ilbfgs0_loss_reduction0.019767_synth_pixel_matching.png', 'chair'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Conv2d_4a_3x3_TA__iadam25000_ilbfgs0_seed542/60_60_60_keyboard_n03085013_4489_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Conv2d_4a_3x3_iadam25000_ilbfgs0_loss_reduction0.003590_synth_pixel_matching.png', 'keyboard'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Mixed_5d_TA__iadam25000_ilbfgs0_seed542/55_55_55_elephant_n02504013_20486_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Mixed_5d_iadam25000_ilbfgs0_loss_reduction0.000329_synth_pixel_matching.png', 'elephant'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Mixed_6e_jittered_relu_TA__iadam25000_ilbfgs0_seed542/05_05_05_bear_n02134084_6873_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Mixed_6e_jittered_relu_iadam25000_ilbfgs0_loss_reduction0.001307_synth_pixel_matching.png', 'bear'],
+  ['demo/from_small_16_class_imagenet_inceptionv3/TV_Mixed_7c_jittered_relu_TA__iadam25000_ilbfgs0_seed542/45_45_45_clock_n02708093_3622_SIDXTV_from_small_16_class_imagenet_inceptionv3_full_Mixed_7c_jittered_relu_iadam25000_ilbfgs0_loss_reduction0.133627_synth_pixel_matching.png', 'clock'],
+];
+
+const cutoff_demo_correct = 7 // Full average is 8.9 from 10 in lab participants, minimum was 7. Use 7 for passing on turk.
+const numPracticeAndDemo = demo_stim.length // practice and demos are all included
+const numRealTrials = false // Use for debugging. Set to false if you want all trials.
+
+// Arrays that will save all of the trial info as we go. Save it once at the end of the experiment.
+trialImagesLogArray = []
+shownOrderArray = []
+maskNumberLogArray = []
+categoryResponseLogArray = []
+// categoryResponse_idxLogArray = []
+reactionTimeArray = []
+startTrialTimeLogArray = []
+delayBeforeTrialLogArray = []
+isPracticeArray = []
+isDemoExperimentArray = []
+displayTimeBgLogArray = []
+displayTimeLogArray = []
+displayTimeMaskLogArray = []
+responseTimeLogArray = []
+responseScreenStartTimeLogArray = []
+responseIsSetLogArray = []
+
+responseIsSet = false // use this to make sure that we are always saving the actual response... useful for debugging the problems with saving.
+
+brokenTrialArray = []
+
+
+// Parse the filepaths so we can check if the response is correct
+function check_demo_stim(trial_correct_response,response)
+  {
+      feedback_correct_response.setAttribute("src", base_src_path.concat('ResponseIcons/' + trial_correct_response + '.png'))
+      return ( trial_correct_response == response)
+  }
+
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
+// https://stackoverflow.com/questions/18194745/shuffle-multiple-javascript-arrays-in-the-same-way
+function shuffle_two_arrray_in_place(obj1, obj2) {
+    var index = obj1.length;
+    var rnd, tmp1, tmp2;
+
+    while (index) {
+        rnd = Math.floor(Math.random() * index);
+        index -= 1;
+        tmp1 = obj1[index];
+        tmp2 = obj2[index];
+        obj1[index] = obj1[rnd];
+        obj2[index] = obj2[rnd];
+        obj1[rnd] = tmp1;
+        obj2[rnd] = tmp2;
+    }
+}
+
+// Read a text file as an array -- used for getting the valid examples for each
+// of the conditions
+// https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
+function readTextFile(file)
+  {
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", file, false);
+      rawFile.onreadystatechange = function ()
+      {
+          if(rawFile.readyState === 4)
+          {
+              if(rawFile.status === 200 || rawFile.status == 0)
+              {
+                  var allText = rawFile.responseText;
+                  alert(allText);
+              }
+          }
+      }
+      rawFile.send(null);
+  }
+
+function init_experiment() {
+  createTrials ()
+//  var web_path = "https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/"
+//  check_loaded_images(web_path, full_images_order)
+}
+
+// Helper to make sure that we coded the logic for image ordering correctly
+function check_loaded_images(web_path, full_images_order) {
+  for (var l = 0; l < full_images_order.length; l++) {
+    $.get(web_path + full_images_order[l])
+      .done(function() {
+          // Do something now you know the image exists.
+          // console.log('Successful Load' + full_images_order[l])
+      }).fail(function() {
+          web_check = false
+          // console.log('Failed Load' + full_images_order[l])
+      })
+    }
+  }
+
+// Gets the image list for the main experiment using a saved json with the
+// experiment configuration.
+function getMainExperimentImageList(experiment_info) {
+  const experiment_conditions = experiment_info.experiment_conditions
+  // Now we needto assign the conditions to the individual images
+  // For each of the 400 images, we want to assign them to a condition.
+  // Take image list and the condition list and shuffle both of them.
+  // Check to make sure the images are present for each of the conditions.
+  // If an image is encountered that is missing, then assign the image to the
+  // 'orig' condition (which has all 400 images). This should happen fairly infrequently.
+  const total_num_conditions = experiment_info.experiment_conditions.length
+  const total_num_stimuli = experiment_info.total_num_unique_stimuli
+  const orig_condition = experiment_info.orig_condition
+  const num_trials_per_condition_before_shuffle = Math.ceil(total_num_stimuli / total_num_conditions)
+  var all_cond_numbers_before_shuffle = [];
+  for (var i = 0; i < total_num_conditions; i++) {
+      cond_number = experiment_conditions[i]
+      all_cond_numbers_before_shuffle = all_cond_numbers_before_shuffle.concat(Array(num_trials_per_condition_before_shuffle).fill(cond_number))
+  }
+
+  // There are 400 unique sounds for the experiment.
+  var all_images = [...Array(total_num_stimuli).keys()];
+
+  // If we want to run a smaller number of sounds, choose the number here (useful for debugging)
+  // var num_exp_trials = 5;
+  var num_exp_trials = all_images.length
+
+  // Shuffle all of the sounds and conditions
+  var all_images_shuffled = shuffle(all_images).slice(0, num_exp_trials)
+  var all_conds_shuffled = shuffle(all_cond_numbers_before_shuffle).slice(0, num_exp_trials)
+  // Check that each of the conditions actually has the matching stimuli
+  for (var j= 0; j < num_exp_trials; j++) {
+    if (!experiment_info.examples_per_model_and_layer[all_conds_shuffled[j]].includes(String(all_images_shuffled[j]))) {
+      all_conds_shuffled[j] = orig_condition // replace with the orig stim
+    }
+  }
+
+  var all_image_paths = [];
+  var n0 = 0
+  var n1 = 0
+  var image_folder_split = []
+  for (var q = 0; q < num_exp_trials; q++) {
+    image_folder = image_folder_name_server + all_conds_shuffled[q]
+    image_folder_split = image_folder.split('/')
+    n0 = image_folder_split[1].indexOf('_');
+    n1 = image_folder_split[2].indexOf('_');
+    image_name = all_images_shuffled[q] + '_' + image_folder_split[1].substring(n0+1) + '_' + image_folder_split[2].substring(n1+1)
+    all_image_paths = all_image_paths.concat(Array(image_folder.concat('/' + image_name + '.png')))
+  }
+
+  // Append the catch trials
+  const num_catch_trials = 16
+  var catch_trials_conditions = Array(num_catch_trials).fill('catch_trial')
+  var all_catch_options = ['airplane.png', 'bicycle.png', 'boat.png',
+      'car.png', 'chair.png', 'dog.png', 'keyboard.png', 'oven.png',
+      'truck.png', 'bear.png', 'bird.png', 'bottle.png', 'cat.png',
+      'clock.png', 'elephant.png', 'knife.png']
+  var catch_trials = shuffle(all_catch_options).slice(0, num_catch_trials)
+  var catch_trial_paths = [];
+  for (var k = 0; k < num_catch_trials; k++) {
+    catch_trial_paths = catch_trial_paths.concat(Array('ResponseIcons/' + catch_trials[k]))
+  }
+
+  full_cond_order = all_conds_shuffled.concat(catch_trials_conditions)
+  full_images_order = all_image_paths.concat(catch_trial_paths)
+
+  shuffle_two_arrray_in_place(full_cond_order, full_images_order)
+
+  // Return the list of shuffled conditions and images
+  return [full_cond_order, full_images_order]
+}
+
+async function createTrials () {
+    var experiment_info = await fetch(base_src_path + json_config_name)
+    .then(response => {
+      // http://blog.niftysnippets.org/2018/06/common-fetch-errors.html
+      if (!response.ok) {
+        web_check = false
+        throw new Error("[Our server might be overloaded... Please return HIT] Failed with HTTP code " + response.status);
+      } else {
+        web_check = true
+      }
+      return response;
+    })
+    .then(response => response.json())
+    .then(data => {
+      experiment_info = data
+      return experiment_info
+    })
+    // then(experiment_info => getMainExperimentImageList(experiment_info))
+    getMainExperimentImageList(experiment_info)
+
+    check_loaded_images(base_src_path, full_images_order)
+
+    // concatenate the new trials to the full list
+    if (numRealTrials) { // use for debugging if we only want a small number of trials.
+      trialImages = trialImages.concat(full_images_order.slice(0,numRealTrials))
+    } else {
+      trialImages = trialImages.concat(full_images_order)
+    }
+    /* Randomly pair the masks */
+    maskOrder = RandomOrder(trialImages.length);
+}
+
+function endExperimentDueToError() {
+  if (typeof(web_check) == "undefined") {
+    swap(effectivePage(current), effectivePage("EndError"));
+    console.log('undefined')
+  } else if (!web_check) {
+    swap(effectivePage(current), effectivePage("EndError"));
+    console.log('web check failed')
+  } else {
+    next()
+    console.log('web check success')
+  }
+
+}
+
+// Global variable
+var trialImages = demo_stim
+var numPractice = 16;
+
+function pad_with_zeroes(number, length) {
+    var my_string = '' + number;
+    while (my_string.length < length) {
+        my_string = '0' + my_string;
+    }
+
+    return my_string;
+}
+
+var DEMO_CORRECT_RESPONSE = 0
+var TOTAL_EXPERIMENT_BONUS = 0
+const DEMO_HIT_PAYMENT = 0.50
+const TOTAL_HIT_BONUS = 6.50
+
+TOTAL_TRIALS_COMPLETED = 0
+
+/* Run one trial:
+   ---------------- */
+function RunTrial() {
+  /* No more starting trials until this one is done: */
+  $(document).unbind("keypress.start");
+  TOTAL_TRIALS_COMPLETED++;
+
+  /* Get the image and maks for this trial: */
+  // Avoid cached images by adding a random string to the end which gets removed.
+  // https://stackoverflow.com/questions/25587973/update-image-src-using-javascript
+  d = new Date();
+  mask_image = document.getElementById("mask_image")
+  mask_image.setAttribute("src", base_src_path.concat("masks/NoiseMask_" + pad_with_zeroes(maskOrder[curTrial],3) + ".png?" + d.getMilliseconds()));
+  trail_image = document.getElementById("trail_image")
+  if (curTrial < (numPracticeAndDemo)) {
+    trial_image.setAttribute("src", base_src_path.concat(trialImages[curTrial][0] + '?' + d.getMilliseconds()));
+    trial_correct_response = trialImages[curTrial][1]
+  } else {
+    // We don't have the correct answers saved for these so that they are no visible on turk.
+    trial_image.setAttribute("src", base_src_path.concat(trialImages[curTrial])+ '?' + d.getMilliseconds());
+  }
+
+  /* Next part of the code handles logic for making sure that we do not move on without
+  having the masks and the images all loaded. It makes and removes event listeners. */
+
+  // Check that the mask image has loaded. Do not move on until it has.
+  function mask_listen() {
+    // Remove the event listeners that we made one function up.
+    try {
+      trial_image.removeEventListener('load', mask_listen)
+    } catch {
+      // console.log('no event listener to remove!')
+    }
+    try {
+      trial_image.removeEventListener('error', trial_image_error)
+    } catch {
+      // console.log('no error listener to remove')
+    }
+
+    // console.log(trial_image.complete)
+    if (mask_image.complete) {
+      // console.log('mask loaded')
+      RunTrialAfterLoad()
+    } else {
+      // console.log('waiting for mask load')
+      mask_image.addEventListener('load', RunTrialAfterLoad)
+      mask_image.addEventListener('error', mask_image_error)
+    }
+  }
+
+  function mask_image_error() {
+    // alert('error loading images')
+    // We should never get here, because we double check that the files exist.
+    // But if we do, run the trial anyway, and flag it as not working.
+    brokenTrialArray = brokenTrialArray.concat(curTrial)
+    RunTrialAfterLoad()
+  }
+
+  function trial_image_error() {
+    // alert('error loading images')
+    // We should never get here, because we double check that the files exist.
+    // But if we do, run the trial anyway, and flag it as not working.
+    brokenTrialArray = brokenTrialArray.concat(curTrial)
+    mask_listen()
+  }
+
+  // Check that the trial image has loaded and wait until it has to move on.
+  if (trial_image.complete) {
+    // console.log('trial image loaded')
+    mask_listen()
+  } else {
+    // console.log('trial image not loaded')
+    trial_image.addEventListener('load', mask_listen)
+    trial_image.addEventListener('error', trial_image_error)
+  }
+}
+
+function RunTrialAfterLoad() {
+  // Try to remove the mask listener if it exists
+  try {
+    mask_image.removeEventListener('load', RunTrialAfterLoad)
+    // console.log('removing mask listener!')
+  } catch {
+    // console.log('no image event listener to remove for mask!')
+  }
+  try {
+    mask.removeEventListener('error', mask_image_error)
+  } catch {
+    // console.log('no mask error listener to remove')
+  }
+
+	/* For the first couple of practice trials, show the
+     stimuli a bit longer. */
+
+  // TODO: Increase these times slightly for the real experiment, because javascript timing is not as precise as psychtoolbox.
+  displayTimeBg = (curTrial<(Math.round(numPractice/2))) ? 500 : 300; // Fixation Time
+  displayTime = (curTrial<(Math.round(numPractice/2))) ? 400 : 300; // Image Time
+  displayTimeMask = (curTrial<(Math.round(numPractice/2))) ? 400 : 300; // Mask Time
+
+  $('#startTrial').hide();
+  $('#trialNum').hide()
+  document.body.style.cursor = "none"
+
+	firstKeyPress = new Date();
+
+  /* Show stimuli: */
+  setTimeout(function() {
+    $('#bgImg').show();
+		/* Remove background and put up object: */
+		setTimeout(function() {
+      $('#trial_image').show()
+	  	$('#bgImg').hide();
+
+	  	/* Remove stimuli and put up mask: */
+	  	setTimeout(function() {
+        $('#mask_image').show();
+				$('#trial_image').hide();
+
+        /* Remove mask and wait for response: */
+        setTimeout(function() {
+        	$('#mask_image').hide();
+          document.body.style.cursor = ""
+          responseScreenStartTime = new Date();
+      		$('#selectImage').show();
+          $('#responseExplain').show();
+          $('#trialNum').show();
+
+          /* Wait for the user to select a response */
+          [$('#airplane'), $('#bear'), $('#bicycle'), $('#bird'),
+           $('#boat'), $('#bottle'), $('#car'), $('#cat'),
+           $('#chair'), $('#clock'), $('#dog'), $('#elephant'),
+           $('#keyboard'), $('#knife'), $('#oven'), $('#truck')].forEach(item => {
+             item.bind("click", function(e) {
+               SetResponseBind(item.selector.split('#')[1])
+               // console.log(item.selector.split('#')[1])
+               LogResponseArrayOnly();
+
+               // Unbind all of the response icons.
+               [$('#airplane'), $('#bear'), $('#bicycle'), $('#bird'),
+                $('#boat'), $('#bottle'), $('#car'), $('#cat'),
+                $('#chair'), $('#clock'), $('#dog'), $('#elephant'),
+                $('#keyboard'), $('#knife'), $('#oven'), $('#truck')].forEach(newitem => {
+                  newitem.unbind("click")})
+               /* Ok, lets hide the response box... */
+               $('#selectImage').hide()
+
+               $('#responseExplain').hide();
+               if (curTrial < (numPracticeAndDemo)) {
+                 correct_response = check_demo_stim(trial_correct_response, categoryResponse)
+                 if (curTrial >= numPractice) {
+                   if (correct_response) { // Add the correct responses
+
+                     DEMO_CORRECT_RESPONSE++;
+                     // console.log(DEMO_CORRECT_RESPONSE)
+                   }
+                 }
+               }
+
+               categoryResponse = "";
+               // categoryResponse_idx = "";
+
+               /* What to do when we're done (either right away, or after feedback): */
+               var doNext = function () {
+                 /* Hide feedback: */
+                 if (curTrial < numPractice) {
+                   $(document).unbind("keypress.feedbackDone");
+                   $('#feedback').hide();
+                   $('#trial_image').hide();
+                   $('#feedback_correct_response').hide();
+                 }
+
+                 // Log that we have moved to the next trial
+                 startTrialTime = new Date();
+
+                 // console.log('Check Mask In Loop')
+                 // console.log(mask_image.complete)
+
+
+                 /* If there are still trials left... */
+                 if (curTrial < trialImages.length-1) {
+                   /* Update trial counter: */
+                   curTrial++;
+                   if (curTrial < numPractice) {
+                     $('#trialNum').text('Practice ' + (curTrial+1) + ' of ' + (numPractice));
+                   } else if (curTrial < (numPracticeAndDemo)) {
+                     $('#trialNum').text('Trial ' + (curTrial+1-numPractice) +
+                       ' of ' + (numPracticeAndDemo - numPractice));
+                   } else { // The real experiment starts here if they pass the demo
+                     $('#trialNum').text('Trial ' + (curTrial+1-numPracticeAndDemo) +
+                       ' of ' + (trialImages.length-numPracticeAndDemo));
+                   }
+                   /* And start waiting for next trial to start: */
+                   setTimeout(function() {
+                     if ((curTrial+1-numPractice) == 1) {
+                       alert('You will not see the correct answer anymore. Please try your best!');
+                       $('#startTrial').show();
+                       $(document).bind("keypress.start", function(e) { RunTrial(); });
+                     } else if ((curTrial+1-numPracticeAndDemo)==1) {
+                       $('#box').hide();
+                       $('#intrucBox').hide();
+                       // Move on to the main experiment if they did well enough
+                       if (DEMO_CORRECT_RESPONSE>=cutoff_demo_correct) {
+                         $(document).unbind("keypress.start")
+                         $('#EXP_INSTRUCTIONS').show();
+                         $('#MainExperimentButton').bind("click", function() {
+                           StartMainExperiment();
+                           $('#startTrial').show();
+                           $(document).bind("keypress.start", function(e) { RunTrial(); });
+                         })
+                       // End the experiment if they didn't do well enough
+                       } else {
+                         endHIT()
+                       }
+                     } else if ((curTrial) == (Math.round(((trialImages.length-numPracticeAndDemo)-1)/4) + numPracticeAndDemo)){
+                       alert('You are doing great! Take a stretch break and hit any key when you are ready to continue!');
+                       $('#startTrial').show();
+                       $(document).bind("keypress.start", function(e) { RunTrial(); });
+                     } else if ((curTrial) == (Math.round(((trialImages.length-numPracticeAndDemo)-1)/2) + numPracticeAndDemo)){
+                       alert('Halfway done! Take a stretch break and hit any key when you are ready to continue!');
+                       $('#startTrial').show();
+                       $(document).bind("keypress.start", function(e) { RunTrial(); });
+                     } else if ((curTrial) == (Math.round((((trialImages.length-numPracticeAndDemo)-1)/4)*3) + numPracticeAndDemo)){
+                       alert('Almost there! Take a stretch break and hit any key when you are ready to continue!');
+                       $('#startTrial').show();
+                       $(document).bind("keypress.start", function(e) { RunTrial(); });
+                     } else {
+                       $('#startTrial').show();
+                       $(document).bind("keypress.start", function(e) { RunTrial(); });
+                     }
+                   }, 500);
+                 } else {
+
+                   /* If no trials left, show end of experiment information: */
+                   /* $('#Done').show(); */
+                   $('#box').hide();
+                   $('#intrucBox').hide();
+                   TOTAL_EXPERIMENT_BONUS+=TOTAL_HIT_BONUS //
+                   endHIT()
+                 }
+               };
+
+               /* For practice trials, show feedback: */
+               if (curTrial < numPractice) {
+                 $('#trial_image').show();
+                 $('#feedback_correct_response').show();
+                 $('#feedback').show();
+                 setTimeout(function() {
+                   $(document).bind("keypress.feedbackDone", doNext);
+                 }, 500);
+               } else {
+                 doNext();
+               }
+
+             });
+           });
+        }, displayTimeMask);
+	  	}, displayTime);
+		}, displayTimeBg);
+	}, 500); // Time after you press the key, before fixation appears
+}
+
+/* Block the enter key outside the response box, so it doesn't
+  submit the form early. This is useful when there is only 1
+  input box, as some browsers submit a form when enter is pressed
+  in this case.  */
+$(function() {
+  $(document).bind('keypress.blockEnter', function(e){
+    if ( e.which == 13 ) { return false;  }
+  });
+});
+
+function StartMainExperiment() {
+  $('#EXP_INSTRUCTIONS').hide();
+  $('#box').show();
+  $('#intrucBox').show();
+}
+
+/* Start the experiment (check for Turk) */
+function StartExperiment() {
+  if (IsOnTurk() && IsTurkPreview()) {
+    alert("Please accept the HIT before continuing.");
+    return false;
+  }
+  startTime = new Date();
+  startTrialTime = new Date();
+  $('#4').hide();
+  $('#box').show();
+  $('#intrucBox').show();
+  $(document).bind("keypress.start", function(e) { RunTrial(); });
+}
+
+function SetResponseBind(response) {
+    categoryResponse = response
+    // categoryResponse_idx = false
+    responseIsSet = true
+  }
+
+function LogResponseArrayOnly() {
+    var answer_time = new Date()
+    // Log the trial image that was presented
+    if (curTrial < (numPracticeAndDemo)) {
+      trialImagesLogArray = trialImagesLogArray.concat(trialImages[curTrial][0])
+    } else {
+      trialImagesLogArray = trialImagesLogArray.concat(trialImages[curTrial])
+    }
+
+    // Log the trial number
+    shownOrderArray = shownOrderArray.concat(curTrial)
+
+    // Log the presented mask
+    maskNumberLogArray = maskNumberLogArray.concat(maskOrder[curTrial])
+
+    // Log the response
+    categoryResponseLogArray = categoryResponseLogArray.concat(categoryResponse)
+
+    // Log the response idx
+    // categoryResponse_idxLogArray = categoryResponse_idxLogArray.concat(categoryResponse_idx)
+
+    // Log the reaction time
+    reactionTimeArray = reactionTimeArray.concat((answer_time - responseScreenStartTime))
+
+    // Log the time at the start of the trial
+    startTrialTimeLogArray = startTrialTimeLogArray.concat(startTrialTime)
+
+		// Log the time at the start of the trial
+    delayBeforeTrialLogArray = delayBeforeTrialLogArray.concat(firstKeyPress - startTrialTime)
+
+    // Log if it is a practice trial
+    isPracticeArray = isPracticeArray.concat(curTrial<numPractice)
+
+    // Log if it is a trial used for determining early stop
+    isDemoExperimentArray = isDemoExperimentArray.concat(((curTrial>=numPractice) && (curTrial<numPracticeAndDemo)))
+
+    // Log the display time for the Fixation
+    displayTimeBgLogArray = displayTimeBgLogArray.concat(displayTimeBg)
+
+    // Log the display time for the Stimuli
+    displayTimeLogArray = displayTimeLogArray.concat(displayTime)
+
+    // Log the display time for the Mask
+    displayTimeMaskLogArray = displayTimeMaskLogArray.concat(displayTimeMask)
+
+    // Log the time of the response
+    responseTimeLogArray = responseTimeLogArray.concat(answer_time)
+
+    // Log the time that the response screen started
+    responseScreenStartTimeLogArray = responseScreenStartTimeLogArray.concat(responseScreenStartTime)
+
+    // Log if we got a response from the click (or if we are a trial behind...)
+    responseIsSetLogArray = responseIsSetLogArray.concat(responseIsSet)
+    responseIsSet = false
+  }
+
+function RemoveResponse(responseid) {
+  $((curTrial+1)).val(responseid);
+}
+
+/* Save the experiment metadata at the end of the experiment */
+function SaveData(div) {
+  var where = document.getElementById(div);
+  // Save the total experiment time
+  var totalTime = (new Date()) - startTime;
+  // Log the time that the experiment was completed.
+  var newDate = new Date();
+  $('#assignmentId').val(GetAssignmentId());
+  var curID = (IsOnTurk())? GetAssignmentId() : prompt("Doesn't look like you " +
+  "are on Turk, so you're probably testing. Enter an ID to save your data with:", "id");
+
+  // Log the Assignment ID
+  var a = document.createElement("input");
+  a.setAttribute("type", "hidden");
+  a.setAttribute("id", "curID");
+  a.setAttribute("name", "curID");
+  a.setAttribute("value", curID);
+  where.appendChild(a);
+
+  // Log the worker ID
+  var b = document.createElement("input");
+  b.setAttribute("type", "hidden");
+  b.setAttribute("id", "workerID");
+  b.setAttribute("name", "workerID");
+  b.setAttribute("value", GetWorkerId());
+  where.appendChild(b);
+
+  // Log the current Time
+  var c = document.createElement("input");
+  c.setAttribute("type", "hidden");
+  c.setAttribute("id", "curTime");
+  c.setAttribute("name", "curTime");
+  c.setAttribute("value", newDate.today() + " @ " + newDate.timeNow());
+  where.appendChild(c);
+
+  // Log the user Agent
+  var d = document.createElement("input");
+  d.setAttribute("type", "hidden");
+  d.setAttribute("id", "userAgent");
+  d.setAttribute("name", "userAgent");
+  d.setAttribute("value", navigator.userAgent);
+  where.appendChild(d);
+
+  // Log the window Width
+  var e = document.createElement("input");
+  e.setAttribute("type", "hidden");
+  e.setAttribute("id", "windowWidth");
+  e.setAttribute("name", "windowWidth");
+  e.setAttribute("value", $(window).width());
+  where.appendChild(e);
+
+  // Log the window Height
+  var f = document.createElement("input");
+  f.setAttribute("type", "hidden");
+  f.setAttribute("id", "windowHeight");
+  f.setAttribute("name", "windowHeight");
+  f.setAttribute("value", $(window).height());
+  where.appendChild(f);
+
+  // Log the screen Width
+  var g = document.createElement("input");
+  g.setAttribute("type", "hidden");
+  g.setAttribute("id", "screenWidth");
+  g.setAttribute("name", "screenWidth");
+  g.setAttribute("value", screen.width);
+  where.appendChild(g);
+
+  // Log the screen Height
+  var h = document.createElement("input");
+  h.setAttribute("type", "hidden");
+  h.setAttribute("id", "screenHeight");
+  h.setAttribute("name", "screenHeight");
+  h.setAttribute("value", screen.height);
+  where.appendChild(h);
+
+  // Log the total Time
+  var i = document.createElement("input");
+  i.setAttribute("type", "hidden");
+  i.setAttribute("id", "totalTime");
+  i.setAttribute("name", "totalTime");
+  i.setAttribute("value", totalTime);
+  where.appendChild(i);
+
+  // Log the comments
+  var j = document.createElement("input");
+  j.setAttribute("type", "hidden");
+  j.setAttribute("id", "comments");
+  j.setAttribute("name", "comments");
+  j.setAttribute("value", $('#comments').val());
+  where.appendChild(j);
+
+  // Log the start Time
+  var k = document.createElement("input");
+  k.setAttribute("type", "hidden");
+  k.setAttribute("id", "startTime");
+  k.setAttribute("name", "startTime");
+  k.setAttribute("value", startTime);
+  where.appendChild(k);
+
+  var j = document.createElement("input");
+  j.setAttribute("type", "hidden");
+  j.setAttribute("id", "bonusPayment");
+  j.setAttribute("name", "bonusPayment");
+  j.setAttribute("value", TOTAL_EXPERIMENT_BONUS);
+  where.appendChild(j);
+
+  var l = document.createElement("input");
+  l.setAttribute("type", "hidden");
+  l.setAttribute("id", "trialImagesEverything");
+  l.setAttribute("name", "trialImagesEverything");
+  l.setAttribute("value", trialImages);
+  where.appendChild(l);
+
+  var trials1 = document.createElement("input");
+  trials1.setAttribute("type", "hidden");
+  trials1.setAttribute("id", "trialImagesLogArray");
+  trials1.setAttribute("name", "trialImagesLogArray");
+  trials1.setAttribute("value", trialImagesLogArray);
+  where.appendChild(trials1);
+
+  var trials2= document.createElement("input");
+  trials2.setAttribute("type", "hidden");
+  trials2.setAttribute("id", "shownOrderArray");
+  trials2.setAttribute("name", "shownOrderArray");
+  trials2.setAttribute("value", shownOrderArray);
+  where.appendChild(trials2);
+
+  var trials3= document.createElement("input");
+  trials3.setAttribute("type", "hidden");
+  trials3.setAttribute("id", "maskNumberLogArray");
+  trials3.setAttribute("name", "maskNumberLogArray");
+  trials3.setAttribute("value", maskNumberLogArray);
+  where.appendChild(trials3);
+
+  var trials4= document.createElement("input");
+  trials4.setAttribute("type", "hidden");
+  trials4.setAttribute("id", "categoryResponseLogArray");
+  trials4.setAttribute("name", "categoryResponseLogArray");
+  trials4.setAttribute("value", categoryResponseLogArray);
+  where.appendChild(trials4);
+
+  // var trials5= document.createElement("input");
+  // trials5.setAttribute("type", "hidden");
+  // trials5.setAttribute("id", "categoryResponse_idxLogArray");
+  // trials5.setAttribute("name", "categoryResponse_idxLogArray");
+  // trials5.setAttribute("value", categoryResponse_idxLogArray);
+  // where.appendChild(trials5);
+
+  var trials6= document.createElement("input");
+  trials6.setAttribute("type", "hidden");
+  trials6.setAttribute("id", "reactionTimeArray");
+  trials6.setAttribute("name", "reactionTimeArray");
+  trials6.setAttribute("value", reactionTimeArray);
+  where.appendChild(trials6);
+
+  var trials7= document.createElement("input");
+  trials7.setAttribute("type", "hidden");
+  trials7.setAttribute("id", "startTrialTimeLogArray");
+  trials7.setAttribute("name", "startTrialTimeLogArray");
+  trials7.setAttribute("value", startTrialTimeLogArray);
+  where.appendChild(trials7);
+
+  var trials8= document.createElement("input");
+  trials8.setAttribute("type", "hidden");
+  trials8.setAttribute("id", "delayBeforeTrialLogArray");
+  trials8.setAttribute("name", "delayBeforeTrialLogArray");
+  trials8.setAttribute("value", delayBeforeTrialLogArray);
+  where.appendChild(trials8);
+
+  var trials9= document.createElement("input");
+  trials9.setAttribute("type", "hidden");
+  trials9.setAttribute("id", "isPracticeArray");
+  trials9.setAttribute("name", "isPracticeArray");
+  trials9.setAttribute("value", isPracticeArray);
+  where.appendChild(trials9);
+
+  var trials10= document.createElement("input");
+  trials10.setAttribute("type", "hidden");
+  trials10.setAttribute("id", "isDemoExperimentArray");
+  trials10.setAttribute("name", "isDemoExperimentArray");
+  trials10.setAttribute("value", isDemoExperimentArray);
+  where.appendChild(trials10);
+
+  var trials11= document.createElement("input");
+  trials11.setAttribute("type", "hidden");
+  trials11.setAttribute("id", "displayTimeBgLogArray");
+  trials11.setAttribute("name", "displayTimeBgLogArray");
+  trials11.setAttribute("value", displayTimeBgLogArray);
+  where.appendChild(trials11);
+
+  var trials12= document.createElement("input");
+  trials12.setAttribute("type", "hidden");
+  trials12.setAttribute("id", "displayTimeLogArray");
+  trials12.setAttribute("name", "displayTimeLogArray");
+  trials12.setAttribute("value", displayTimeLogArray);
+  where.appendChild(trials12);
+
+  var trials13= document.createElement("input");
+  trials13.setAttribute("type", "hidden");
+  trials13.setAttribute("id", "displayTimeMaskLogArray");
+  trials13.setAttribute("name", "displayTimeMaskLogArray");
+  trials13.setAttribute("value", displayTimeMaskLogArray);
+  where.appendChild(trials13);
+
+  var trials14= document.createElement("input");
+  trials14.setAttribute("type", "hidden");
+  trials14.setAttribute("id", "responseTimeLogArray");
+  trials14.setAttribute("name", "responseTimeLogArray");
+  trials14.setAttribute("value", responseTimeLogArray);
+  where.appendChild(trials14);
+
+  var trials15= document.createElement("input");
+  trials15.setAttribute("type", "hidden");
+  trials15.setAttribute("id", "responseScreenStartTimeLogArray");
+  trials15.setAttribute("name", "responseScreenStartTimeLogArray");
+  trials15.setAttribute("value", responseScreenStartTimeLogArray);
+  where.appendChild(trials15);
+
+  var trials16= document.createElement("input");
+  trials16.setAttribute("type", "hidden");
+  trials16.setAttribute("id", "TOTAL_TRIALS_COMPLETED");
+  trials16.setAttribute("name", "TOTAL_TRIALS_COMPLETED");
+  trials16.setAttribute("value", TOTAL_TRIALS_COMPLETED);
+  where.appendChild(trials16);
+
+  var trials17= document.createElement("input");
+  trials17.setAttribute("type", "hidden");
+  trials17.setAttribute("id", "responseIsSetLogArray");
+  trials17.setAttribute("name", "responseIsSetLogArray");
+  trials17.setAttribute("value", responseIsSetLogArray);
+  where.appendChild(trials17);
+
+  var trials18= document.createElement("input");
+  trials18.setAttribute("type", "hidden");
+  trials18.setAttribute("id", "DEMO_CORRECT_RESPONSE");
+  trials18.setAttribute("name", "DEMO_CORRECT_RESPONSE");
+  trials18.setAttribute("value", DEMO_CORRECT_RESPONSE);
+  where.appendChild(trials18);
+
+  var trials19= document.createElement("input");
+  trials19.setAttribute("type", "hidden");
+  trials19.setAttribute("id", "brokenTrialArray");
+  trials19.setAttribute("name", "brokenTrialArray");
+  trials19.setAttribute("value", brokenTrialArray);
+  where.appendChild(trials19);
+}
+
+</script><script>
+var current = 1; //current page
+var moved = []; //pages moved by the rand
+var movedto = [];
+
+//takes randomization into account
+function effectivePage(pagenum) {
+var index = moved.indexOf(pagenum);
+if(index == -1) {
+return pagenum;
+}else{
+return movedto[index];
+}
+}
+
+var numberText = []; //stores divs to be updated on page change
+var pntexts = []; //texts in them
+function makePageNumber(text) { //text: e.g., "Page 1 / 4"
+var temp = text.split(1);
+var texts = [temp[0], temp[1]];
+//needed if there are more 1's (e.g. if total # of pages contains the digit 1)
+if(temp.length > 2) {
+for(var i = 2; i < temp.length; i++) {
+texts[1] += 1 + temp[i];
+}
+}
+document.writeln("<p><div id='pagenumberdiv" + numberText.length + "'></div></p>");
+loadPageNumber(("pagenumberdiv" + numberText.length), texts);
+}
+function loadPageNumber(id, texts) {
+var newone = document.getElementById(id);
+numberText.push(newone);
+pntexts.push(texts);
+updatePageNumbers();
+}
+function updatePageNumbers() {
+for(var i = 0; i < numberText.length; i++) {
+numberText[i].innerHTML = pntexts[i][0] + current + pntexts[i][1];
+}
+}
+
+//make one vanish and the other appear
+function swap(vanish, appear) {
+document.getElementById(vanish).style.display = "none";
+//document.getElementById(appear).style.display = "inline";
+document.getElementById(appear).style.display = "";
+updatePageNumbers();
+}
+
+//go to the next page
+function next() {
+current++;
+swap(effectivePage(current - 1), effectivePage(current));
+}
+
+function endHIT() {
+current++;
+printBonus()
+swap(effectivePage(current - 1), "COMPLETE");
+}
+
+
+function back() {
+    current--;
+    swap(effectivePage(current + 1), effectivePage(current));
+}
+//shuffles the array
+Array.prototype.shuffle = function () {
+    for (var i = this.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = this[i];
+        this[i] = this[j];
+        this[j] = tmp;
+    }
+
+    return this;
+}
+
+// Create our number formatter.
+var formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+
+  // These options are needed to round to whole numbers if that's what you want.
+  //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+  //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+});
+
+function printBonus(){
+  document.getElementById("DonePrintPayment").innerHTML = formatter.format(DEMO_HIT_PAYMENT)
+  document.getElementById("DonePrintBonus").innerHTML = formatter.format(TOTAL_EXPERIMENT_BONUS)
+}
+
+</script>
+<style>
+.showImg {
+  display: none;
+	border: 1px solid gray;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 160px;
+  margin: auto;
+}
+
+.showFeedback {
+  display: none;
+	border: 1px solid gray;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 384px;
+  margin: auto;
+}
+
+</style>
+</head>
+<body>
+
+
+<!-- <form name='mturk_form' method='post' id='mturk_form' action='https://workersandbox.mturk.com/mturk/externalSubmit'> -->
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
+<input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+
+<div class="page" id="COMPLETE" style="display: none;">
+    <div class="cell">
+      <div class="warning">Done! Thanks!<br></div>
+      <h3>HIT Payment: <span id="DonePrintPayment"></span></h3>
+      <h3>BONUS Payment: <span id="DonePrintBonus"></span></h3>
+      <div class "warning">Any comments for us? (Was it fun? Any technical difficulties?)</div>
+       <textarea name="comments" id="comments" style="width: 400px; height: 130px"></textarea>
+      <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+        <br />
+        <input onclick="SaveData('COMPLETE');swap('COMPLETE','SUBMISSION_PAGE')" type="button" value="Continue" /></div>
+</div>
+
+<div id="enderror">
+<div class="page" id="EndError" style="display: none;">
+  <div class="cell">
+    <div class="warning">Please return the HIT. We ran into a problem initializing the HIT. Your data is not saved. Sorry for the inconvenience. </div>
+</div>
+</div>
+</div>
+
+<div id="intrucBox">
+<div id="trialNum" style="text-align:left">Practice 1 of 16</div><div id="instruc"></div>
+</div>
+
+<div id="selectImage" style="text-align:center">
+<img id="airplane" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/airplane.png" />
+<img id="bear" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bear.png" />
+<img id="bicycle" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bicycle.png" />
+<img id="bird" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bird.png" />
+<br>
+<img id="boat" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/boat.png" />
+<img id="bottle" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bottle.png" />
+<img id="car" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/car.png" />
+<img id="cat" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/cat.png" />
+<br>
+<img id="chair" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/chair.png" />
+<img id="clock" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/clock.png" />
+<img id="dog" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/dog.png" />
+<img id="elephant" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/elephant.png" />
+<br>
+<img id="keyboard" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/keyboard.png" />
+<img id="knife" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/knife.png" />
+<img id="oven" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/oven.png" />
+<img id="truck" type="button" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/truck.png" />
+</div>
+
+<style>
+    #box {
+      display: none;
+      margin: 0px auto;
+      padding: 10px;
+      width: 540px;
+      height: 60px;
+    }
+</style>
+
+<div id="box" style="text-align:center; display:none">
+<div id="responseExplain">Please click the image you saw.</div>
+
+
+<div id="feedback">Here's the image you saw (top) and the correct response (bottom).<div style="font-size: 16pt; margin-top: 5px; font-style: italic">Press any key to move on</div></div>
+
+<div id="startTrial">Press any key to start the next trial</div>
+
+<div id="imageDiv" style="width:540px; margin:0 auto;">
+<!-- These will be updated with each trial: -->
+<img id="mask_image" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/masks/NoiseMask_000.png" class="showImg" style="width:224px;height:224px;" loading="eager">
+<img id="trial_image" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/masks/NoiseMask_000.png" class="showImg" style="width:224px;height:224px;" loading="eager">
+<img id="bgImg" src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/Fixation_Image.png" class="showImg" style="width:224px;height:224px;" loading="eager">
+
+<img id="feedback_correct_response" src="" class="showFeedback" style="width:224px;height:224px;" loading="eager">
+</div>
+</div>
+
+
+<div class="wrapper">
+    <div class="page" id="EXP_INSTRUCTIONS" style="display: none;">
+        <div class="cell">
+            <div align="center">&nbsp;</div>
+
+            <p>You completed the demo experiment and will receive $0.50 for the HIT. You can now move onto the main part of the experiment.</p>
+
+            <p>The full experiment consists of 416 trials similar to those in the demo and should take ~30 minutes to complete. You will receive a $6.50 Bonus for completing the full experiment ($7.00 total). </p>
+
+            <div>Some trials might be difficult (for instance, the image may be very noisy), but please try your best!</div>
+
+            <div>There will be stopping points 1/4, 1/2 and 3/4 of the way through the experiment. Please use these to stretch and try to concentrate during the whole experiment!</div>
+
+            <div>We monitor the responses for this HIT and obvious cheating or guessing is grounds for rejection or a $0 bonus payment</div>
+
+            <p>When you are ready, press the "CONTINUE" button below.</p>
+
+            <p>If you would prefer to exit the experiment now, press the "SUBMIT" button at the bottom of the page, and you will be redirected to a submission screen.</p>
+
+            <p>&nbsp;</p>
+
+            <div align="center">&nbsp;</div>
+            <div>Continue to the task.</div>
+            <input id="MainExperimentButton" type="button" value="Continue" />
+
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+
+            <div align="center">&nbsp;</div>
+            <div>Use the button below to submit early and get $0.50 for the HIT (please use this if you had any problems running the demo experiment).</div>
+            <input onclick="swap('EXP_INSTRUCTIONS', 'are_you_sure_you_want_to_exit')" type="button" value="SUBMIT" />
+            <p>&nbsp;</p>
+        </div>
+    </div>
+</div>
+
+<div class="page" id="are_you_sure_you_want_to_exit" style="display: none;"><!-- This is the page you will be directed to if you want to leave early -->
+<div class="cell">
+<div class="warning">You clicked a button to submit early.</div>
+<p> If this was a mistake and you want to return to the experiment, use the "RETURN" button below. If not, hit the "SUBMIT" button to exit.</p>
+
+<div>Exit and submit the hit.</div>
+<input onclick="swap('are_you_sure_you_want_to_exit','COMPLETE');" type="button" value="SUBMIT" />
+<p>&nbsp;</p>
+
+<div>Return to the experiment.</div>
+<input onclick="swap('are_you_sure_you_want_to_exit', 'EXP_INSTRUCTIONS')" type="button" value="RETURN" /></div>
+<p>&nbsp;</p>
+
+</div>
+
+<style type="text/css">.wrapper {
+height: 80%;
+width: 100%;
+display: table;
+}
+
+.page {
+display: table-cell;
+vertical-align: middle;
+}
+
+.cell {
+margin: 0 auto;
+padding: 10px;
+width: 850px;
+}
+
+#pagenum {
+text-align: center;
+font-style: italic;
+}
+.disclaimer {
+font-weight: bold;
+color: #555555;
+}
+
+.warning {
+font-weight: bold;
+}
+</style>
+
+<div class="wrapper">
+<div class="page" id="1">
+<div class="cell">
+<div align="center">
+<h1>Image recognition</h1>
+<!--The below statement MUST appear as the first page on any MIT turk study--></div>
+
+<div>Disclaimer: This HIT is part of a scientific research project. Your decision to complete this HIT is voluntary. There is no way for us to identify you. The only information we will have, in addition to your responses, is the time at which you completed the survey. The results of the research may be presented at scientific meetings or published in scientific journals. Clicking on the 'Continue' button on the bottom of this page indicates that you are at least 18 years of age, and agree to complete this HIT voluntarily.</div>
+
+<div>&nbsp;</div>
+
+<div class="warning"><strong>THIS HIT IS LONG AND TAKES 30-40 MINUTES TO COMPLETE. DO NOT ACCEPT THIS HIT IF YOU DO NOT HAVE TIME TO COMPLETE THE HIT.&nbsp;</strong></div>
+
+<div class="warning">&nbsp;</div>
+
+<div class="warning"><strong>We monitor the responses for this HIT and obvious cheating or guessing is grounds for rejection or a $0 bonus payment. If you accept this HIT please follow instructions for the full experiment!&nbsp;</strong></div>
+
+<div class="warning">&nbsp;</div>
+
+<div class="warning"><strong>Accepting this HIT if you have done the full task in the past may result in a rejection. If you accept this HIT then realize you have completed it, please return the HIT. Thank you!&nbsp;</strong></div>
+
+<div class="warning">&nbsp;</div>
+
+<div class="warning">Please answer every question; blank response fields will result in an invalid submission!</div>
+
+<div>&nbsp;</div>
+
+<div class="warning">PAY SCHEME</div>
+
+<div>This HIT pays $0.50 for a short task (about 5 mins).</div>
+
+<div>If performance is good on the first task, the HIT will automatically continue to a longer task (an additional ~30 mins).</div>
+
+<div>Turkers who successfully complete the full longer task will be awarded an additional BONUS of $6.50</div>
+
+<p>&nbsp;</p>
+
+<!-- UNCOMMENT TO GO THROUGH DEMOGRAPHICS -->
+<input onclick="next();init_experiment()" type="button" value="Continue" />
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="2" style="display: none;"><!--Page 2 gets demographic info-->
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<p>1. How do you identify your gender?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+    <tbody>
+        <tr>
+            <td valign="middle"><input name="Q1Gender" type="radio" value="Male" /></td>
+            <td><span class="answertext">Male</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q1Gender" type="radio" value="Female" /></td>
+            <td><span class="answertext">Female</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q1Gender" type="radio" value="Non-binary" /></td>
+            <td><span class="answertext">Non-binary</span></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>&nbsp;2. What is your age?</p>
+
+<p><input id="Q2age" name="Q2age" size="6" type="text" /></p>
+
+<p>3. Country?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+    <tbody>
+        <tr>
+            <td valign="middle"><input name="Q3Country" type="radio" value="USA" /></td>
+            <td><span class="answertext">United States</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q3Country" type="radio" value="India" /></td>
+            <td><span class="answertext">Canada</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q3Country" type="radio" value="Other" /></td>
+            <td><span class="answertext">Other</span></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>4. I Identify my race as:</p>
+     <p> Note: There is no penalty for selecting 'Choose Not To Respond'</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+    <tbody>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="AmericanIndian" /></td>
+            <td><span class="answertext">American Indian/Alaska Native</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="Asian" /></td>
+            <td><span class="answertext">Asian</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="NativeHawaiian" /></td>
+            <td><span class="answertext">Native Hawaiian or Other Pacific Islander</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="Black" /></td>
+            <td><span class="answertext">Black or African American</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="White" /></td>
+            <td><span class="answertext">White</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="MoreThanOne" /></td>
+            <td><span class="answertext">More than One Race</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q7Demography" type="radio" value="NoResponse" /></td>
+            <td><span class="answertext">Choose Not To Respond</span></td>
+        </tr>
+
+    </tbody>
+</table>
+
+
+    <p>5. I identify my ethnicity as:</p>
+     <p> Note: There is no penalty for selecting 'Choose Not To Respond'</p>
+<table border="0" cellpadding="0" cellspacing="4">
+    <tbody>
+        <tr>
+            <td valign="middle"><input name="Q8Demography" type="radio" value="Hispanic" /></td>
+            <td><span class="answertext">Hispanic/Latinx</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q8Demography" type="radio" value="NotHispanic" /></td>
+            <td><span class="answertext">Not Hispanic or Latinx</span></td>
+        </tr>
+        <tr>
+            <td valign="middle"><input name="Q8Demography" type="radio" value="NoResponse" /></td>
+            <td><span class="answertext">Choose Not To Respond</span></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<div class="warning">Please answer every question; blank response fields will result in an invalid submission!</div>
+
+<div>&nbsp;</div>
+<div class="warning">Press 'Continue' when complete to begin audio calibration.</div>
+<input onclick="endExperimentDueToError();" type="button" value="Continue" />
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="3" style="display: none;"><!--Page 6 introduces the paradigm and gives practice/demo stim-->
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<div class="warning">INSTRUCTIONS</div>
+
+<p>&nbsp;</p>
+
+<div>This study is about image identification. </div>
+<p> In each trial you will see an image, and you will need to identify what you see in the image. </p>
+
+<p> <b> The image will be present for a very brief time, so watch the screen carefully.</b> </p>
+
+<p> Some images might be harder to identfy than others (for instance, they may look very noisy), but you still need to submit an answer for each trial. </p>
+
+<p> Focus on the "+" at the start of the trial. It is centered on where the image will be presented.</p>
+
+<p> There are 16 categories that you can choose from, which will be presented on the next screen. One of the categories will always be present in the image.</p>
+
+<p> There will be a set of 16 practice trials, followed by a Demo experiment with 12 trials. The Practice and Demo will take less than 5 minutes and pay $0.50. If you do well on this task, you will be directed to the full experiment consisting of 416 trials, which should take approximately 30 minutes, and upon completion will award a bonus of $6.50.</p>
+
+<p> This task is meant to be challenging. There will be some that you get wrong, and that’s okay.  Just do your best for each trial.</p>
+
+<p>&nbsp;</p>
+<font color="red">NOTE: This page disables the RETURN key to prevent accidental submission before the task is complete. You will need to click on the correct response and click the SUBMIT buttons with the mouse.</font>
+
+<p>&nbsp;</p>
+
+
+<p>&nbsp;</p>
+
+<p id="TF1">&nbsp;</p>
+
+<div>Continue to the task.</div>
+<input onclick="next();" type="button" value="Continue" />
+
+</div>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="4" style="display: none;">
+<div class="cell">
+<div class="warning" align="center"><strong>These are the response icons which you will have to choose from.&nbsp;</strong></div>
+<div class="warning" align="center"><strong>Please make your window full screen and resize if necessary so that all icons are visible.&nbsp;</strong></div>
+<p>&nbsp;</p>
+</div>
+<div id="imageicons" style="text-align:center">
+<style>
+figure {
+  padding: 0px;
+  margin: 0;
+}
+</style>
+
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/airplane.png" />
+    <figcaption>airplane</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bear.png" />
+    <figcaption>bear</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bicycle.png" />
+    <figcaption>bicycle</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bird.png" />
+    <figcaption>bird</figcaption>
+</figure>
+<br>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/boat.png" />
+    <figcaption>boat</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/bottle.png" />
+    <figcaption>bottle</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/car.png" />
+    <figcaption>car</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/cat.png" />
+    <figcaption>cat</figcaption>
+</figure>
+
+<br>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/chair.png" />
+    <figcaption>chair</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/clock.png" />
+    <figcaption>clock</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/dog.png" />
+    <figcaption>dog</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/elephant.png" />
+    <figcaption>elephant</figcaption>
+</figure>
+
+<br>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/keyboard.png" />
+    <figcaption>keyboard</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/knife.png" />
+    <figcaption>knife</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/oven.png" />
+    <figcaption>oven (cooking food)</figcaption>
+</figure>
+<figure>
+    <img src="https://mcdermottlab.mit.edu/mturk_stimuli/imagerec_robust_models_v1/ResponseIcons/truck.png" />
+    <figcaption>truck</figcaption>
+</figure>
+
+</div>
+<div class="warning" align="center"><strong>Please study the object labels. &nbsp;</strong></div>
+<div class="warning" align="center"><strong>Object categories are broad but distinct. &nbsp;</strong></div>
+<div class="warning" align="center"><strong>For instance "oven" is any food cooking, such as rotisseries, and "bottles" can be many shapes and sizes. &nbsp;</strong></div>
+
+<p style='text-align: center'><a href='javascript:StartExperiment()' id='startExperimentButton'>Start Experiment</a></p>
+<p>&nbsp;</p>
+</div>
+
+<div class="page" id="SUBMISSION_PAGE" style="display: none;"> <!--Button to submit the HIT-->
+    <div class="cell">
+        <div class="warning">You've completed the HIT -- Thanks for your help!</div>
+
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+        <br />
+        <input type="submit" value="Submit" /></div>
+</div>
+
+</div>
+
+</form>
+</body>
+</html>
+

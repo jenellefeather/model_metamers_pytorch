@@ -1,0 +1,94 @@
+######### | Visual Networks: Standard Supervised Experiment | #########
+NUM_PERMUTATIONS = 10000
+
+Loading EXP1 - CORnet-S (Standard) ||| EXP1_ANALYSIS/VisionExperiment1_network_vs_humans_datamatrix_cornet_s.mat
+Using between factors
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 12).
+EXP1 - CORnet-S (Standard) Full ANOVA
+                              SumSq     DF      MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                173.3      1        173.3    9636.4    2.9853e-51    2.9853e-51    2.9853e-51    2.9853e-51             NaN      
+    network_or_human          7.6317      1       7.6317    424.37    1.4192e-23    1.4192e-23    1.4192e-23    1.4192e-23         0.90994      
+    Error                     0.7553     42     0.017983                                                                               NaN      
+    (Intercept):layer         8.1642      5       1.6328    298.72    2.3452e-93    2.0555e-78    8.1056e-88    1.0538e-20         0.87673      
+    network_or_human:layer    8.0254      5       1.6051    293.64    1.1309e-92    7.6509e-78     3.551e-87    1.4458e-20         0.87487      
+    Error(layer)              1.1479    210    0.0054661                                                                               NaN      
+
+EXP1 - CORnet-S (Standard) F(observer) main effect: 424.3749
+EXP1 - CORnet-S (Standard) p-value main effect: 0.0001
+EXP1 - CORnet-S (Standard) F(stage, observer) interaction: 293.6448
+EXP1 - CORnet-S (Standard) p-value interaction: 0.0001
+
+Loading EXP1 - VGG-19 (Standard) ||| EXP1_ANALYSIS/VisionExperiment1_network_vs_humans_datamatrix_vgg_19.mat
+Using between factors
+EXP1 - VGG-19 (Standard) Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG       pValueHF       pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    ___________    ___________    __________    __________________
+
+    (Intercept)                235.05      1       235.05     15449     1.5313e-55     1.5313e-55     1.5313e-55    1.5313e-55             NaN      
+    network_or_human           24.528      1       24.528    1612.1     3.9049e-35     3.9049e-35     3.9049e-35    3.9049e-35         0.97461      
+    Error                     0.63903     42     0.015215                                                                                  NaN      
+    (Intercept):layer          14.742      9       1.6381    260.62    3.9741e-156    2.3778e-122    8.8535e-149    1.2825e-19         0.86121      
+    network_or_human:layer     15.181      9       1.6868    268.38    3.3686e-158    5.7591e-124    9.4305e-151    7.5224e-20         0.86468      
+    Error(layer)               2.3758    378    0.0062853                                                                                  NaN      
+
+EXP1 - VGG-19 (Standard) F(observer) main effect: 1612.0788
+EXP1 - VGG-19 (Standard) p-value main effect: 0.0001
+EXP1 - VGG-19 (Standard) F(stage, observer) interaction: 268.376
+EXP1 - VGG-19 (Standard) p-value interaction: 0.0001
+
+Loading EXP1 - ResNet50 (Standard) ||| EXP1_ANALYSIS/VisionExperiment1_network_vs_humans_datamatrix_resnet50.mat
+Using between factors
+EXP1 - ResNet50 (Standard) Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue        pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    ___________    __________    __________    __________    __________________
+
+    (Intercept)                226.88      1      226.88     11719     4.9794e-53    4.9794e-53    4.9794e-53    4.9794e-53             NaN      
+    network_or_human           10.743      1      10.743    554.92     7.8856e-26    7.8856e-26    7.8856e-26    7.8856e-26         0.92964      
+    Error                     0.81312     42     0.01936                                                                                NaN      
+    (Intercept):layer           12.41      7      1.7728    305.81    6.4636e-131     4.609e-87     9.965e-99    6.8278e-21         0.87925      
+    network_or_human:layer     11.776      7      1.6823    290.21    5.4278e-128    3.8758e-85    1.5452e-96    1.7962e-20         0.87357      
+    Error(layer)               1.7043    294    0.005797                                                                                NaN      
+
+EXP1 - ResNet50 (Standard) F(observer) main effect: 554.9194
+EXP1 - ResNet50 (Standard) p-value main effect: 0.0001
+EXP1 - ResNet50 (Standard) F(stage, observer) interaction: 290.2059
+EXP1 - ResNet50 (Standard) p-value interaction: 0.0001
+
+Loading EXP1 - ResNet101 (Standard) ||| EXP1_ANALYSIS/VisionExperiment1_network_vs_humans_datamatrix_resnet101.mat
+Using between factors
+EXP1 - ResNet101 (Standard) Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF       pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    __________    ___________    __________    __________________
+
+    (Intercept)                 226.1      1        226.1     20860     2.8345e-58    2.8345e-58     2.8345e-58    2.8345e-58             NaN      
+    network_or_human           10.858      1       10.858    1001.7     6.2269e-31    6.2269e-31     6.2269e-31    6.2269e-31         0.95976      
+    Error                     0.45524     42     0.010839                                                                                 NaN      
+    (Intercept):layer          11.779      7       1.6828    332.45    1.2899e-135    1.6543e-93    1.3638e-106    1.4433e-21         0.88783      
+    network_or_human:layer     12.253      7       1.7505    345.83    7.4809e-138    4.8998e-95     2.434e-108     6.891e-22          0.8917      
+    Error(layer)               1.4882    294    0.0050617                                                                                 NaN      
+
+EXP1 - ResNet101 (Standard) F(observer) main effect: 1001.7123
+EXP1 - ResNet101 (Standard) p-value main effect: 0.0001
+EXP1 - ResNet101 (Standard) F(stage, observer) interaction: 345.8264
+EXP1 - ResNet101 (Standard) p-value interaction: 0.0001
+
+Loading EXP1 - AlexNet (Standard) ||| EXP1_ANALYSIS/VisionExperiment1_network_vs_humans_datamatrix_alexnet.mat
+Using between factors
+EXP1 - AlexNet (Standard) Full ANOVA
+                              SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF       pValueLB     partial_etaSquared
+                              ______    ___    _________    ______    ___________    __________    ___________    __________    __________________
+
+    (Intercept)               172.75      1       172.75    6961.9      2.661e-48     2.661e-48      2.661e-48     2.661e-48             NaN      
+    network_or_human          23.212      1       23.212    935.44     2.4726e-30    2.4726e-30     2.4726e-30    2.4726e-30         0.95703      
+    Error                     1.0422     42     0.024814                                                                                 NaN      
+    (Intercept):layer         11.211      8       1.4014    189.07    1.7841e-119    5.0085e-90    3.8677e-106    3.7919e-17         0.81823      
+    network_or_human:layer    11.565      8       1.4456    195.03    2.5157e-121    2.0664e-91    8.8692e-108    2.2155e-17          0.8228      
+    Error(layer)              2.4905    336    0.0074123                                                                                 NaN      
+
+EXP1 - AlexNet (Standard) F(observer) main effect: 935.4408
+EXP1 - AlexNet (Standard) p-value main effect: 0.0001
+EXP1 - AlexNet (Standard) F(stage, observer) interaction: 195.0267
+EXP1 - AlexNet (Standard) p-value interaction: 0.0001

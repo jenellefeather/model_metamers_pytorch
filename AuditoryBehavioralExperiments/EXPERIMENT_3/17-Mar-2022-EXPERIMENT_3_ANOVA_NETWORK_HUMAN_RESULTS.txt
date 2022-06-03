@@ -1,0 +1,110 @@
+######### | Auditory Networks: Waveform Adversarially Trained CochResNet50 Experiment | #########
+NUM_PERMUTATIONS = 10000
+
+Loading EXP3 - CochResNet50 (Standard) ||| EXPERIMENT_3/AudioExperiment3_network_vs_humans_datamatrix_cochresnet50.mat
+Using between factors
+EXP3 - CochResNet50 (Standard) Full ANOVA
+                              SumSq     DF      MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)               230.44      1       230.44    6783.9    1.9145e-44    1.9145e-44    1.9145e-44    1.9145e-44             NaN      
+    network_or_human           12.19      1        12.19    358.87    5.9081e-21    5.9081e-21    5.9081e-21    5.9081e-21         0.90425      
+    Error                     1.2908     38     0.033969                                                                               NaN      
+    (Intercept):layer         8.5403      8       1.0675    107.61    5.1817e-84    1.0725e-55    3.8521e-65    1.2197e-12         0.73903      
+    network_or_human:layer    7.9768      8      0.99709    100.51    9.7945e-81    1.4778e-53    1.2709e-62    3.1802e-12         0.72565      
+    Error(layer)              3.0157    304    0.0099202                                                                               NaN      
+
+EXP3 - CochResNet50 (Standard) F(observer) main effect: 358.8715
+EXP3 - CochResNet50 (Standard) p-value main effect: 0.0001
+EXP3 - CochResNet50 (Standard) F(stage, observer) interaction: 100.5117
+EXP3 - CochResNet50 (Standard) p-value interaction: 0.0001
+
+Loading EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=1) ||| EXPERIMENT_3/AudioExperiment3_network_vs_humans_datamatrix_cochresnet50_l2_1_robust_waveform.mat
+Using between factors
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=1) Full ANOVA
+                              SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)               219.49      1      219.49    6318.9    7.3233e-44    7.3233e-44    7.3233e-44    7.3233e-44             NaN      
+    network_or_human          9.0445      1      9.0445    260.38    1.3564e-18    1.3564e-18    1.3564e-18    1.3564e-18         0.87265      
+    Error                     1.3199     38    0.034735                                                                               NaN      
+    (Intercept):layer         8.6534      8      1.0817      74.8    2.6875e-67    8.2088e-53    1.0903e-63    1.6406e-10         0.66312      
+    network_or_human:layer    8.1669      8      1.0209    70.595    8.1672e-65    6.9674e-51    2.4112e-61    3.4085e-10         0.65007      
+    Error(layer)              4.3961    304    0.014461                                                                               NaN      
+
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=1) F(observer) main effect: 260.3827
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=1) p-value main effect: 0.0001
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=1) F(stage, observer) interaction: 70.5947
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=1) p-value interaction: 0.0001
+
+Loading EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=0.5) ||| EXPERIMENT_3/AudioExperiment3_network_vs_humans_datamatrix_cochresnet50_l2_p5_robust_waveform.mat
+Using between factors
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=0.5) Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                234.37      1      234.37    9049.3    8.2345e-47    8.2345e-47    8.2345e-47    8.2345e-47             NaN      
+    network_or_human            9.059      1       9.059    349.78     9.185e-21     9.185e-21     9.185e-21     9.185e-21         0.90201      
+    Error                     0.98415     38    0.025899                                                                               NaN      
+    (Intercept):layer          6.6585      8     0.83231    66.585     2.336e-62    1.2257e-41    1.3078e-48    7.0335e-10         0.63666      
+    network_or_human:layer     6.9964      8     0.87455    69.965    1.9589e-64    5.3559e-43    3.2801e-50    3.8124e-10         0.64803      
+    Error(layer)                  3.8    304      0.0125                                                                               NaN      
+
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=0.5) F(observer) main effect: 349.7848
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=0.5) p-value main effect: 0.0001
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=0.5) F(stage, observer) interaction: 69.9648
+EXP3 - CochResNet50 Wav Adversarial L2 Norm (EPS=0.5) p-value interaction: 0.0001
+
+Loading EXP3 - CochResNet50 Wav Random L2 Norm (EPS=1) ||| EXPERIMENT_3/AudioExperiment3_network_vs_humans_datamatrix_cochresnet50_l2_1_random_step_waveform.mat
+Using between factors
+EXP3 - CochResNet50 Wav Random L2 Norm (EPS=1) Full ANOVA
+                              SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)               219.73      1      219.73    5744.2    4.4334e-43    4.4334e-43    4.4334e-43    4.4334e-43             NaN      
+    network_or_human          14.192      1      14.192    371.01    3.3279e-21    3.3279e-21    3.3279e-21    3.3279e-21         0.90709      
+    Error                     1.4536     38    0.038253                                                                               NaN      
+    (Intercept):layer         9.0456      8      1.1307    100.66    8.3402e-81    7.4483e-62    2.4743e-74    3.1159e-12         0.72595      
+    network_or_human:layer    9.2124      8      1.1516    102.52    1.1218e-81    1.6274e-62     3.928e-75    2.4147e-12         0.72957      
+    Error(layer)              3.4148    304    0.011233                                                                               NaN      
+
+EXP3 - CochResNet50 Wav Random L2 Norm (EPS=1) F(observer) main effect: 371.0118
+EXP3 - CochResNet50 Wav Random L2 Norm (EPS=1) p-value main effect: 0.0001
+EXP3 - CochResNet50 Wav Random L2 Norm (EPS=1) F(stage, observer) interaction: 102.5152
+EXP3 - CochResNet50 Wav Random L2 Norm (EPS=1) p-value interaction: 0.0001
+
+Loading EXP3 - CochResNet50 Wav Adversarial Linf Norm (EPS=0.002) ||| EXPERIMENT_3/AudioExperiment3_network_vs_humans_datamatrix_cochresnet50_linf_p002_robust_waveform.mat
+Using between factors
+EXP3 - CochResNet50 Wav Adversarial Linf Norm (EPS=0.002) Full ANOVA
+                              SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)               237.99      1      237.99      6658    2.7275e-44    2.7275e-44    2.7275e-44    2.7275e-44             NaN      
+    network_or_human          9.0775      1      9.0775    253.95    2.0548e-18    2.0548e-18    2.0548e-18    2.0548e-18         0.86984      
+    Error                     1.3583     38    0.035745                                                                               NaN      
+    (Intercept):layer          6.932      8     0.86651    75.646    8.7293e-68    9.9236e-51     1.396e-60     1.421e-10         0.66563      
+    network_or_human:layer     7.166      8     0.89576      78.2    3.0781e-69    8.3718e-52    7.1164e-62    9.2689e-11         0.67298      
+    Error(layer)              3.4822    304    0.011455                                                                               NaN      
+
+EXP3 - CochResNet50 Wav Adversarial Linf Norm (EPS=0.002) F(observer) main effect: 253.954
+EXP3 - CochResNet50 Wav Adversarial Linf Norm (EPS=0.002) p-value main effect: 0.0001
+EXP3 - CochResNet50 Wav Adversarial Linf Norm (EPS=0.002) F(stage, observer) interaction: 78.2001
+EXP3 - CochResNet50 Wav Adversarial Linf Norm (EPS=0.002) p-value interaction: 0.0001
+
+Loading EXP3 - CochResNet50 Wav Random Linf Norm (EPS=0.002) ||| EXPERIMENT_3/AudioExperiment3_network_vs_humans_datamatrix_cochresnet50_linf_p002_random_step_waveform.mat
+Using between factors
+EXP3 - CochResNet50 Wav Random Linf Norm (EPS=0.002) Full ANOVA
+                              SumSq     DF      MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)               230.92      1       230.92      7121    7.6555e-45    7.6555e-45    7.6555e-45    7.6555e-45             NaN      
+    network_or_human          12.258      1       12.258    377.99    2.4112e-21    2.4112e-21    2.4112e-21    2.4112e-21         0.90865      
+    Error                     1.2323     38     0.032428                                                                               NaN      
+    (Intercept):layer         8.3048      8       1.0381    105.46    4.9182e-83    2.6301e-47    5.7573e-54    1.6231e-12         0.73511      
+    network_or_human:layer    8.1671      8       1.0209    103.71    3.1319e-82    7.3729e-47    1.8804e-53    2.0534e-12         0.73184      
+    Error(layer)              2.9925    304    0.0098438                                                                               NaN      
+
+EXP3 - CochResNet50 Wav Random Linf Norm (EPS=0.002) F(observer) main effect: 377.9889
+EXP3 - CochResNet50 Wav Random Linf Norm (EPS=0.002) p-value main effect: 0.0001
+EXP3 - CochResNet50 Wav Random Linf Norm (EPS=0.002) F(stage, observer) interaction: 103.7083
+EXP3 - CochResNet50 Wav Random Linf Norm (EPS=0.002) p-value interaction: 0.0001

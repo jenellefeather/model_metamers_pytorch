@@ -1,0 +1,1962 @@
+<!--
+Word Recognition turk experiment that uses stored info in json files to set up
+the trial conditions.
+Jenelle Feather (May 2021)
+
+This example runs the CochCNN9 cochleagram adversarial training experiment (Figure 
+6 of Feather et al. 2022). See `model_analysis_folders/all_model_info.py`
+for other model configuration locations. 
+
+To run on turk or in the sandbox, copy this entire file into the "Design Layout" 
+box and change the base_src_path, json_config_name, and image_folder_name_server 
+to match that experiment you are running (and change the payment amounts if using 
+a different number of stimuli). 
+
+-->
+
+<!--Unique Turker Script - we also use qualifications but this is the best way to check for HITS that are running simultaneously. -->
+<!--<script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>-->
+<!--<script type="text/javascript">-->
+<!--(function(){-->
+<!--    var ut_id = "3ad111e3183ccd5e6de55c14086ab2c4";-->
+<!--    if (UTWorkerLimitReached(ut_id)) {-->
+<!--        document.getElementById('mturk_form').style.display = 'none';-->
+<!--        document.getElementsByTagName('body')[0].innerHTML = "You have already completed a version of this Word Recognition experiment. Please click 'Return HIT' to avoid any impact on your approval rating.";-->
+<!--    }-->
+<!--})();-->
+<!--</script>-->
+
+<!--This code block disables the enter key so that it doesn't submit the hit. -->
+<script>
+    function show(shown, hidden) {
+        document.getElementById(shown).style.display='block';
+        document.getElementById(hidden).style.display='none';
+        return false;
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://timbrady.org/turk/TimTurkTools.js"></script>
+
+<script>
+    $('html').bind('keypress', function(e)
+                   {
+                   if(e.keyCode == 13)
+                   {
+                   return false;
+                   }
+                   });
+</script>
+
+<script>
+/// Specify the experiment json file (contains stimulus information and the conditions)
+var base_src_path = "https://mcdermottlab.mit.edu/mturk_stimuli/audio_word_rec_metamers/";
+var json_config_name = "FOR_WEB_audio_experiment_8_load_experiment_info.json";
+/// Yes, this is an audio experiment but we reused some of the image experiment code here and did not change the name...
+const image_folder_name_server = 'experiment8_audio/';
+
+DEMO_BONUS_AMOUNT = 0.50;
+// EXPERIMENT_BONUS_AMOUNT = 11.50;
+COMPLETION_BONUS_AMOUNT = 3.50
+
+var HC_key = [];
+var HC_version = [];
+
+trial_idx=0;
+demo_trial_idx=0;
+
+var all_words=["ability", "about", "above", "accepted", "according", "account", "across", "action", "active", "activities", "activity", "actually", "added", "addition", "additional", "advanced", "africa", "after", "again", "against", "agency", "agreed", "agreement", "allow", "allowed", "almost", "alone", "along", "already", "alternative", "although", "always", "america", "american", "americans", "among", "amount", "analysts", "ancient", "animals", "announced", "annual", "another", "appear", "appearance", "appeared", "appears", "appointed", "approach", "approximately", "april", "areas", "around", "article", "asked", "assets", "associated", "association", "attack", "attacks", "attempt", "attempted", "attended", "attention", "august", "authority", "available", "avoid", "award", "banks", "based", "basis", "battle", "became", "because", "become", "becoming", "before", "began", "beginning", "behind", "being", "believe", "believed", "below", "better", "between", "beyond", "billion", "black", "board", "books", "britain", "british", "brought", "budget", "build", "building", "built", "business", "california", "called", "calls", "canadian", "cannot", "capital", "career", "carried", "cases", "cause", "caused", "center", "central", "cents", "century", "certain", "chairman", "change", "changed", "changes", "character", "characters", "charles", "chief", "child", "children", "china", "civil", "claim", "claimed", "claims", "class", "clear", "close", "closed", "coast", "college", "coming", "commercial", "commission", "committee", "common", "community", "companies", "company", "company's", "compared", "competition", "complete", "completed", "complex", "concept", "conditions", "conference", "conflict", "congress", "conservative", "considered", "construction", "contains", "continue", "continued", "contract", "control", "corporation", "costs", "could", "country", "county", "course", "court", "cover", "create", "created", "creation", "critical", "criticism", "critics", "cross", "culture", "current", "currently", "damage", "david", "death", "december", "decided", "decision", "decline", "declined", "defense", "department", "described", "design", "designed", "despite", "determined", "developed", "developing", "development", "didn't", "different", "difficult", "direct", "directly", "director", "discovered", "distance", "district", "doctor", "doesn't", "dollar", "dollars", "domestic", "don't", "double", "during", "earlier", "early", "earth", "education", "effect", "effects", "effort", "efforts", "eight", "eighteen", "eighty", "either", "elected", "elements", "eleven", "encyclopedia", "ended", "energy", "english", "enough", "entire", "equipment", "especially", "established", "estate", "estimated", "event", "events", "eventually", "every", "evidence", "example", "except", "exchange", "executive", "expected", "experience", "failed", "family", "famous", "feature", "featured", "february", "federal", "fiction", "field", "fifteen", "fifth", "fifty", "final", "financial", "first", "followed", "following", "force", "forced", "forces", "foreign", "formation", "formed", "former", "forms", "forty", "found", "foundation", "founded", "fourteen", "fourth", "france", "french", "friends", "front", "funds", "further", "future", "games", "general", "generally", "german", "given", "giving", "global", "going", "government", "great", "greater", "ground", "group", "groups", "growing", "growth", "having", "health", "heavy", "helped", "higher", "highest", "highly", "himself", "historical", "history", "holding", "hours", "house", "however", "human", "hundred", "immediately", "impact", "important", "include", "included", "includes", "including", "income", "incorporated", "increase", "increased", "increasing", "increasingly", "independent", "index", "individual", "individuals", "industrial", "industry", "inflation", "influence", "information", "initial", "initially", "inside", "instance", "instead", "intended", "interest", "international", "introduced", "investment", "investors", "involved", "island", "isn't", "issue", "issued", "issues", "itself", "james", "january", "japan", "japanese", "joined", "judge", "killed", "kingdom", "known", "labor", "large", "largely", "larger", "largest", "later", "latin", "launched", "leader", "leadership", "leading", "least", "leave", "leaving", "legal", "letter", "letters", "level", "levels", "light", "likely", "limited", "lines", "little", "lived", "living", "local", "located", "london", "longer", "looking", "lower", "magazine", "mainly", "major", "majority", "makes", "making", "management", "manager", "march", "market", "markets", "material", "matter", "meaning", "means", "media", "medical", "meeting", "member", "members", "michael", "might", "miles", "military", "million", "minister", "mission", "modern", "money", "month", "months", "morning", "mostly", "moved", "movement", "music", "musical", "named", "names", "national", "native", "natural", "nature", "nearly", "needed", "never", "night", "nineteen", "nineteenth", "ninety", "north", "northern", "noted", "notes", "nothing", "novel", "november", "nuclear", "number", "numbers", "numerous", "occurred", "october", "offer", "offered", "office", "officer", "official", "officials", "often", "opened", "opening", "operating", "operation", "operations", "order", "organization", "original", "originally", "other", "others", "outside", "paper", "parents", "particular", "particularly", "parts", "party", "passed", "peace", "people", "percent", "performance", "performed", "period", "person", "personal", "physical", "place", "placed", "planned", "plans", "plant", "played", "player", "players", "playing", "point", "points", "police", "political", "popular", "population", "position", "possible", "potential", "power", "powers", "practice", "presence", "present", "presented", "press", "pressure", "prevent", "previous", "previously", "price", "prices", "primarily", "primary", "prime", "prior", "private", "probably", "problem", "problems", "process", "produce", "produced", "product", "production", "products", "professional", "profit", "program", "programs", "project", "property", "proposal", "proposed", "protection", "provide", "provided", "public", "published", "quality", "quarter", "question", "quickly", "quite", "radio", "raised", "range", "rates", "rather", "reach", "reached", "reason", "receive", "received", "recent", "recently", "record", "recorded", "records", "reduced", "referred", "refused", "region", "regular", "related", "relationship", "relatively", "release", "released", "religious", "remain", "remained", "remaining", "remains", "replaced", "report", "reported", "reports", "required", "research", "response", "result", "resulting", "results", "return", "returned", "review", "richard", "right", "rights", "river", "robert", "rules", "running", "safety", "sales", "saying", "scale", "school", "science", "scientific", "season", "second", "secretary", "section", "securities", "seems", "selling", "senate", "senior", "separate", "september", "series", "serious", "served", "service", "seven", "seventeen", "seventy", "several", "share", "shares", "short", "should", "shown", "shows", "significant", "similar", "simply", "since", "single", "situation", "sixteen", "sixty", "small", "smaller", "social", "society", "something", "sometimes", "sound", "sources", "south", "southern", "special", "specific", "speed", "spending", "spent", "spokesman", "spread", "square", "staff", "stage", "standard", "start", "started", "state", "stated", "statement", "status", "still", "stock", "stories", "story", "strategy", "street", "strong", "structure", "students", "studies", "study", "style", "subject", "success", "successful", "suggested", "summer", "supply", "support", "supported", "system", "taken", "takes", "taking", "technology", "television", "terms", "texas", "their", "themselves", "theory", "there", "therefore", "these", "things", "think", "third", "thirteen", "thirty", "thomas", "those", "though", "thought", "thousand", "thousands", "three", "through", "throughout", "times", "title", "today", "together", "total", "towards", "track", "trade", "trading", "traditional", "training", "travel", "treatment", "troops", "trying", "turned", "twelve", "twentieth", "twenty", "typically", "under", "units", "university", "until", "using", "usually", "value", "variety", "various", "version", "video", "wanted", "water", "weeks", "western", "where", "whether", "which", "while", "white", "whole", "whose", "widely", "wikipedia", "winter", "within", "without", "women", "words", "worked", "workers", "working", "works", "world", "world's", "would", "writing", "written", "wrote", "years", "yesterday", "young"];
+
+const numRealTrials = false; // Use for debugging. Set to false if you want all trials.
+
+var demo_stim = [
+                "feedback_trials_train_data/train_dry-development-orig.wav",
+                "feedback_trials_train_data/train_dry-spokesman-orig.wav",
+                "feedback_trials_train_data/train_dry-would-orig.wav",
+                "feedback_trials_train_data/train_dry-already-orig.wav",
+                "feedback_trials_train_data/train_dry-texas-orig.wav",
+                "feedback_trials_train_data/train_dry-people-orig.wav",
+                "feedback_trials_train_data/train_dry-where-orig.wav",
+                "feedback_trials_train_data/train_dry-little-orig.wav",
+                "feedback_trials_train_data/train_dry-points-orig.wav",
+                "feedback_trials_train_data/train_dry-nature-orig.wav",
+                 "demo_stim_preproc/0_dry_1-after-dry.wav",
+                 "demo_stim_preproc/1_dry_2-likely-dry.wav",
+                 "demo_stim_preproc/2_30x30conv1_1-named-synth.wav",
+                 "demo_stim_preproc/3_kell2018conv1_1-fourteen-synth.wav",
+                 "demo_stim_preproc/4_30x30conv2_1-other-synth.wav",
+                 "demo_stim_preproc/5_kell2018conv2_1-difficult-synth.wav",
+                 "demo_stim_preproc/6_30x30conv3_1-california-synth.wav",
+                 "demo_stim_preproc/7_kell2018conv3_1-increased-synth.wav",
+                 "demo_stim_preproc/8_30x30conv4_1-remain-synth.wav",
+                 "demo_stim_preproc/9_kell2018conv4_1-looking-synth.wav",
+                 "demo_stim_preproc/10_30x30conv5_1-officer-synth.wav",
+                 "demo_stim_preproc/11_kell2018conv5_1-development-synth.wav",
+];
+
+num_feedback_trials = 10;
+
+// Global variable
+sounds_order = [];
+sounds_presented_array = [];
+responses_array = [];
+trial_start_time_array = [];
+audio_play_time_array = [];
+trial_end_time_array = [];
+isDemoExperimentArray = [];
+allTrialIDXArray = [];
+
+for(i = 0; i < 6; i++){
+jj = Math.floor(Math.random() * 3) + 1 ;
+HC_key[i] = jj.toString();
+}
+
+for(i = 0; i < 6; i++){
+jj = Math.floor(Math.random() * 2) + 1 ;
+HC_version[i] = jj.toString();
+}
+
+var HC_corr = 0; //these are all various indices that track the stim #, etc
+var ind = -1;
+var p_T_ind = -1;
+var trial_ind = -1;
+
+</script>
+<script>
+function range1(i){return i?range1(i-1).concat(i):[]}; // Defines a function that returns an array of numbers 1:i
+
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
+// https://stackoverflow.com/questions/18194745/shuffle-multiple-javascript-arrays-in-the-same-way
+function shuffle_two_arrray_in_place(obj1, obj2) {
+    var index = obj1.length;
+    var rnd, tmp1, tmp2;
+
+    while (index) {
+        rnd = Math.floor(Math.random() * index);
+        index -= 1;
+        tmp1 = obj1[index];
+        tmp2 = obj2[index];
+        obj1[index] = obj1[rnd];
+        obj2[index] = obj2[rnd];
+        obj1[rnd] = tmp1;
+        obj2[rnd] = tmp2;
+    }
+}
+
+function randomIntFromInterval(min,max)
+{
+return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+/// Set up the experiment condition from the json file at the beginning of the experiment.
+async function createTrials () {
+    var experiment_info = await fetch(base_src_path + json_config_name)
+    .then(response => {
+      // http://blog.niftysnippets.org/2018/06/common-fetch-errors.html
+      if (!response.ok) {
+        web_check = false
+        throw new Error("[Our server might be overloaded... Please return HIT] Failed with HTTP code " + response.status);
+      } else {
+        web_check = true
+      }
+      return response;
+    })
+    .then(response => response.json())
+    .then(data => {
+      experiment_info = data
+      return experiment_info
+    })
+    .catch(err => {
+      console.log('REACHED ERROR')
+      web_check = false
+      throw new Error("[Our server might be overloaded... Please return HIT]");
+    })
+    // then(experiment_info => getMainExperimentImageList(experiment_info))
+    getMainExperimentImageList(experiment_info)
+
+    check_loaded_images(base_src_path, full_images_order)
+
+    // concatenate the new trials to the full list
+    if (numRealTrials) { // use for debugging if we only want a small number of trials.
+      sounds_order = sounds_order.concat(full_images_order.slice(0,numRealTrials))
+    } else {
+      sounds_order = sounds_order.concat(full_images_order)
+    }
+
+    document.getElementById("display_total_experiment_trials").innerHTML = sounds_order.length;
+    document.getElementById("display_total_experiment_trials2").innerHTML = sounds_order.length;
+    document.getElementById("display_total_experiment_trials3").innerHTML = sounds_order.length;
+}
+
+function endExperimentDueToError() {
+  if (typeof(web_check) == "undefined") {
+    swap(effectivePage(current), effectivePage("EndError"));
+    console.log('undefined')
+  } else if (!web_check) {
+    swap(effectivePage(current), effectivePage("EndError"));
+    console.log('web check failed')
+  } else {
+    next()
+    console.log('web check success')
+  }
+
+}
+
+// Helper to make sure that we coded the logic for image ordering correctly
+function check_loaded_images(web_path, full_images_order) {
+  for (var l = 0; l < full_images_order.length; l++) {
+    $.get(web_path + full_images_order[l])
+      .done(function() {
+          // Do something now you know the image exists.
+          console.log('Successful Load' + full_images_order[l])
+      }).fail(function() {
+          web_check = false
+          console.log('Failed Load' + full_images_order[l])
+      })
+    }
+  }
+
+// Gets the image list for the main experiment using a saved json with the
+// experiment configuration.
+function getMainExperimentImageList(experiment_info) {
+  const experiment_conditions = experiment_info.experiment_conditions
+  // Now we needto assign the conditions to the individual images
+  // For each of the 400 images, we want to assign them to a condition.
+  // Take image list and the condition list and shuffle both of them.
+  // Check to make sure the images are present for each of the conditions.
+  // If an image is encountered that is missing, then assign the image to the
+  // 'orig' condition (which has all 400 images). This should happen fairly infrequently.
+  const total_num_conditions = experiment_info.experiment_conditions.length
+  const total_num_stimuli = experiment_info.total_num_unique_stimuli
+  const orig_replacement_condition = experiment_info.orig_replacement_condition
+  const num_trials_per_condition_before_shuffle = Math.ceil(total_num_stimuli / total_num_conditions)
+  var all_cond_numbers_before_shuffle = [];
+  for (var i = 0; i < total_num_conditions; i++) {
+      cond_number = experiment_conditions[i]
+      all_cond_numbers_before_shuffle = all_cond_numbers_before_shuffle.concat(Array(num_trials_per_condition_before_shuffle).fill(cond_number))
+  }
+
+  // There are 400 unique sounds for the experiment.
+  var all_images = [...Array(total_num_stimuli).keys()];
+
+  // If we want to run a smaller number of sounds, choose the number here (useful for debugging)
+  // var num_exp_trials = 5;
+  var num_exp_trials = all_images.length
+
+  // Shuffle all of the sounds and conditions
+  var all_images_shuffled = shuffle(all_images).slice(0, num_exp_trials)
+  var all_conds_shuffled = shuffle(all_cond_numbers_before_shuffle).slice(0, num_exp_trials)
+  var swapped_trials = []
+
+  // Check that each of the conditions actually has the matching stimuli
+  for (var j= 0; j < num_exp_trials; j++) {
+    if (!experiment_info.examples_per_model_and_layer[all_conds_shuffled[j]].includes(String(all_images_shuffled[j]))) {
+      swapped_trials = swapped_trials.concat([all_conds_shuffled[j], all_images_shuffled[j]])
+      all_conds_shuffled[j] = orig_replacement_condition // replace with the orig stim
+    }
+  }
+
+  // Log the trials that we swapped out
+  var s = document.createElement("input");
+  var where = document.getElementById("2");
+  s.setAttribute("type", "hidden");
+  s.setAttribute("id", "swapped_trials");
+  s.setAttribute("name", "swapped_trials");
+  s.setAttribute("value", swapped_trials);
+  where.appendChild(s);
+
+  var all_image_paths = [];
+  var n0 = 0
+  var n1 = 0
+  var image_folder_split = []
+  for (var q = 0; q < num_exp_trials; q++) {
+    image_folder = image_folder_name_server + all_conds_shuffled[q]
+    image_folder_split = image_folder.split('/')
+    n0 = image_folder_split[1].indexOf('_');
+    n1 = image_folder_split[2].indexOf('_');
+    image_name = all_images_shuffled[q] + '_' + image_folder_split[1].substring(n0+1) + '_' + image_folder_split[2].substring(n1+1)
+    all_image_paths = all_image_paths.concat(Array(image_folder.concat('/' + image_name + '.wav')))
+  }
+
+  // TODO: Make additional catch trials
+  // Append the catch trials
+  const num_catch_trials = 16
+  var catch_trials_conditions = Array(num_catch_trials).fill('catch_trial')
+
+  var all_catch_options = ['article.wav', 'prior.wav',
+      'story.wav', 'university.wav', 'originally.wav', 'friends.wav',
+      'published.wav', 'attention.wav', 'manager.wav', 'february.wav',
+      'relationship.wav', 'performance.wav', 'community.wav', 'individual.wav',
+      'better.wav', 'american.wav', 'damage.wav', 'safety.wav', 'media.wav',
+      'mission.wav']
+  var catch_trials = shuffle(all_catch_options).slice(0, num_catch_trials)
+  var catch_trial_paths = [];
+  for (var k = 0; k < num_catch_trials; k++) {
+    catch_trial_paths = catch_trial_paths.concat(Array('catch_trials/' + catch_trials[k]))
+  }
+
+  full_cond_order = all_conds_shuffled.concat(catch_trials_conditions)
+  full_images_order = all_image_paths.concat(catch_trial_paths)
+
+  shuffle_two_arrray_in_place(full_cond_order, full_images_order)
+
+  // Return the list of shuffled conditions and images
+  return [full_cond_order, full_images_order]
+}
+
+function check_demo_stim(stim_name,response)
+{
+    correct_answer = stim_name.split('-').slice(-2)[0]
+    return ( correct_answer == response)
+}
+
+function init_experiment() {
+  createTrials ()
+}
+
+function getResp(word_response_id){
+    resp = document.getElementById(word_response_id).value;
+    return resp
+}
+
+function displayTrialFunc() {
+    document.getElementById("display_trial_idx").innerHTML = trial_idx;
+}
+
+var DEMO_correct_answers = 0;
+TOTAL_EXPERIMENT_BONUS=0;
+startTime = new Date(); // Experiment Start Time
+trial_start_time = new Date();
+
+startTimeDemo = 0
+
+// this function swaps out a completed demo trial for a new one, going through the 12 demo stim
+function replaceDemoTrial(Tstim, div, word_response) {
+    clickDisable('DEMO_cont')
+    clickDisable('DEMO_button')
+    document.getElementById('loading_demo_text').innerHTML = 'Loading audio...';
+    if (demo_trial_idx == 0) {
+      startTimeDemo = new Date();
+    } else if (demo_trial_idx>0) { // We use this same function to set up the first trial. Don't save if it is the start of the first trial.
+      var where = document.getElementById(div);   // This stuff below just makes 'hidden' fields to record the stim info
+      var thisStim = document.getElementById(Tstim);   // This stuff below just makes 'hidden' fields to record the stim info
+      ans = getResp(word_response);
+      stim_name = thisStim.src
+      var is_correct_answer = check_demo_stim(stim_name,ans)
+      var end_trial_time = new Date()
+
+      sounds_presented_array = sounds_presented_array.concat(stim_name)
+      responses_array = responses_array.concat(ans)
+      trial_end_time_array = trial_end_time_array.concat(end_trial_time)
+      isDemoExperimentArray = isDemoExperimentArray.concat(true)
+      allTrialIDXArray = allTrialIDXArray.concat("DEMO_"+(demo_trial_idx-1)+"")
+
+      var y = document.createElement("input");
+      y.setAttribute("type", "hidden");
+      y.setAttribute("id", "Resp_Demo_trial_"+(demo_trial_idx-1)+"");
+      y.setAttribute("name", "Resp_Demo_trial_"+(demo_trial_idx-1)+"");
+      y.setAttribute("value", ans);
+      where.appendChild(y);
+
+      var z = document.createElement("input");
+      z.setAttribute("type", "hidden");
+      z.setAttribute("id", "Audio_Demo_trial_"+(demo_trial_idx-1)+"");
+      z.setAttribute("name", "Audio_Demo_trial_"+(demo_trial_idx-1)+"");
+      z.setAttribute("value", stim_name);
+      where.appendChild(z);
+
+      // Save this as an array instead of in this form.
+      // // The time for trial_0 is when the experiment first starts.
+      // var t = document.createElement("input");
+      // t.setAttribute("type", "hidden");
+      // t.setAttribute("id", "TimeEnd_Demo_trial_"+(demo_trial_idx-1)+"");
+      // t.setAttribute("name", "TimeEnd_Demo_trial_"+(demo_trial_idx-1)+"");
+      // t.setAttribute("value", end_trial_time);
+      // where.appendChild(t);
+
+      // Provide feedback for a small number of demo trials, count the number correct for others.
+      if (demo_trial_idx < num_feedback_trials) {
+        if (is_correct_answer) {
+          alert('Nice Job! The correct answer was "' + stim_name.split('-').slice(-2)[0] + '", and your answer was "' + ans + '".')
+        } else {
+          alert('The correct answer was "' + stim_name.split('-').slice(-2)[0] + '", but your answer was "' + ans + '". Remember to choose the word in the middle (at the 1 second mark of the 2 second sound clip).')
+        }
+      } else if (demo_trial_idx == num_feedback_trials) {
+        if (is_correct_answer) {
+          alert('Nice Job! The correct answer was "' + stim_name.split('-').slice(-2)[0] + '", and your answer was "' + ans + '". This is the last trial with feedback. Good luck!')
+        } else {
+          alert('The correct answer was "' + stim_name.split('-').slice(-2)[0] + '", but your answer was "' + ans + '". Remember to choose the word in the middle (at the 1 second mark of the 2 second sound clip). This is the last trial with feedback. Good luck!')
+        }
+      } else { // Increment DEMO_correct_answers for trials where we don't have feedback.
+        if (is_correct_answer) {
+            DEMO_correct_answers++
+        }
+      }
+    }
+
+    // If we just played the last demo (11) then exit and move on.
+    // Note that since demo_trial_idx has already been ticked up.
+    if (demo_trial_idx == demo_stim.length) {
+        // Add the bonus amount for completing this part of the experiment
+        TOTAL_EXPERIMENT_BONUS+=DEMO_BONUS_AMOUNT
+        // TODO: tally the number of trials correct so we know where to direct people
+        // In lab average is 7/12, and minimum was 5/12. Make sure people do better than the minimum.
+        if (DEMO_correct_answers >= 5) {
+            swap('DEMO_TRIALS', 'EXP_INSTRUCTIONS')
+        }
+        else {
+            swap('DEMO_TRIALS', 'end_after_demo')
+        }
+    }
+    else {
+        document.getElementById('DEMO_table').innerHTML=""
+        document.getElementById(word_response).value=""
+
+        // Swap in the new demo audio
+        trial_audio = document.getElementById(Tstim)
+        trial_audio.src = base_src_path.concat(demo_stim[demo_trial_idx])
+
+        // Check that the trial audio has loaded and wait until it has to move on.
+        if (trial_audio.readyState==4) {
+          // console.log('trial audio loaded')
+          RunTrialAfterLoadDemo()
+        } else {
+          // console.log('trial audio not loaded, listening')
+          trial_audio.addEventListener('canplaythrough', RunTrialAfterLoadDemo)
+          trial_audio.addEventListener('error', trial_audio_error_demo)
+        }
+
+        function RunTrialAfterLoadDemo() {
+          try {
+            trial_audio.removeEventListener('canplaythrough', RunTrialAfterLoadDemo)
+            // console.log('removing trial audio listener!')
+          } catch {
+            // console.log('no image event listener to remove for trial audio!')
+          }
+          try {
+            trial_audio.removeEventListener('error', trial_audio_error_demo)
+          } catch {
+            // console.log('no mask trial audio error listener to remove')
+          }
+          document.getElementById('loading_demo_text').innerHTML='';
+          clickEnable('DEMO_button');
+          trial_start_time = new Date();
+          trial_start_time_array = trial_start_time_array.concat(trial_start_time);
+          // Add the index after replacement so that we play the first sound with this function
+          demo_trial_idx++;
+        }
+    }
+}
+
+brokenTrialArray = []
+
+function trial_audio_error_demo() {
+  // alert('error loading images')
+  // We should never get here, because we double check that the files exist.
+  // But if we do, run the trial anyway, and flag it as not working.
+  brokenTrialArray = brokenTrialArray.concat('demo ' + demo_trial_idx)
+  RunTrialAfterLoadDemo()
+}
+
+function trial_audio_error() {
+  // alert('error loading images')
+  // We should never get here, because we double check that the files exist.
+  // But if we do, run the trial anyway, and flag it as not working.
+  brokenTrialArray = brokenTrialArray.concat('exp ' + demo_trial_idx)
+  RunTrialAfterLoad()
+}
+
+
+// this function swaps out a completed experiment trial for a new one, going through the 300 experiment stim.
+function replaceExpTrial(Tstim, div, word_response) {
+    clickDisable('EXP_cont')
+    clickDisable('EXP_button')
+    document.getElementById('loading_exp_text').innerHTML = 'Loading audio...';
+    if (trial_idx>0) { // We use this same function to set up the first trial. Don't save if it is the start of the first trial.
+      var where = document.getElementById(div);   // This stuff below just makes 'hidden' fields to record the stim info
+      var thisStim = document.getElementById(Tstim);   // This stuff below just makes 'hidden' fields to record the stim info
+      ans= getResp(word_response);
+      stim_name = thisStim.src
+      var end_trial_time = new Date()
+
+      sounds_presented_array = sounds_presented_array.concat(stim_name)
+      responses_array = responses_array.concat(ans)
+      trial_end_time_array = trial_end_time_array.concat(end_trial_time)
+      isDemoExperimentArray = isDemoExperimentArray.concat(false)
+      allTrialIDXArray = allTrialIDXArray.concat((trial_idx-1))
+
+      // TODO: These saves could likely be removed as they are redundant with the saved array.
+      // For now leave them here as a double check (and in case the HIT gets submitted early)
+      var y = document.createElement("input");
+      y.setAttribute("type", "hidden");
+      y.setAttribute("id", "Resp_Exp_trial_"+(trial_idx-1)+"");
+      y.setAttribute("name", "Resp_Exp_trial_"+(trial_idx-1)+"");
+      y.setAttribute("value", ans);
+      where.appendChild(y);
+
+      var z = document.createElement("input");
+      z.setAttribute("type", "hidden");
+      z.setAttribute("id", "Audio_Exp_trial_"+(trial_idx-1)+"");
+      z.setAttribute("name", "Audio_Exp_trial_"+(trial_idx-1)+"");
+      z.setAttribute("value", stim_name);
+      where.appendChild(z);
+
+      // Save as an array instead of in this form
+      // // The time for trial_0 is when the experiment first starts.
+      // var t = document.createElement("input");
+      // t.setAttribute("type", "hidden");
+      // t.setAttribute("id", "TimeEnd_Exp_trial_"+(trial_idx-1)+"");
+      // t.setAttribute("name", "TimeEnd_Exp_trial_"+(trial_idx-1)+"");
+      // t.setAttribute("value", end_trial_time);
+      // where.appendChild(t);
+
+      // Give alerts when we are 1/4, 1/2, and 3/4 the way through the experiment
+      if (trial_idx == Math.round((sounds_order.length-1)/4)){
+        alert('You are doing great! Take a stretch break and hit any key when you are ready to continue!');
+      } else if (trial_idx == Math.round(2*(sounds_order.length-1)/4)){
+        alert('Halfway done! Take a stretch break and hit any key when you are ready to continue!');
+      } else if (trial_idx == Math.round(3*(sounds_order.length-1)/4)){
+        alert('Almost there! Take a stretch break and hit any key when you are ready to continue!');
+      }
+    }
+
+    // If we just played the last sound then exit and move on.
+    // Note that since trial_idx is added at the end we check for the trial_idx=sound_order.length
+    if (trial_idx == sounds_order.length) {
+        swap('EXP_TRIALS', 'FULL_EXP_COMPLETION')
+    }
+    else {
+        document.getElementById('EXP_table').innerHTML=""
+        document.getElementById(word_response).value=""
+
+        // Get the sound location and update the src
+        sound_path = base_src_path + sounds_order[trial_idx]
+        trial_audio = document.getElementById(Tstim)
+        trial_audio.src = sound_path
+
+        // Check that the trial audio has loaded and wait until it has to move on.
+        if (trial_audio.readyState==4) {
+          // console.log('trial audio loaded')
+          RunTrialAfterLoad()
+        } else {
+          // console.log('trial audio not loaded, listening')
+          trial_audio.addEventListener('canplaythrough', RunTrialAfterLoad)
+          trial_audio.addEventListener('error', trial_audio_error)
+        }
+
+        function RunTrialAfterLoad() {
+          try {
+            trial_audio.removeEventListener('canplaythrough', RunTrialAfterLoad)
+            // console.log('removing trial audio listener!')
+          } catch {
+            // console.log('no image event listener to remove for trial audio!')
+          }
+          try {
+            trial_audio.removeEventListener('error', trial_audio_error)
+          } catch {
+            // console.log('no mask trial audio error listener to remove')
+          }
+
+          document.getElementById('loading_exp_text').innerHTML = '';
+          clickEnable('EXP_button')
+          trial_start_time = new Date();
+          trial_start_time_array = trial_start_time_array.concat(trial_start_time);
+          // Add the index here so that we play the first sound with this function
+          trial_idx++;
+        }
+    }
+}
+
+// Checks the text response box to see if any of the word is present in the dictionary.
+function check_dictionary(continue_id, table_id, word_response_id){
+    word = document.getElementById(word_response_id).value.toLowerCase();
+
+    new_array=[];
+
+    found=0;
+    can_disable=0
+    //Loops over entries in arr and stores those that contain the input.
+    for (i = 0; i < all_words.length; i++) {
+        if (word == ""){
+            found=2;
+        }
+        else if (all_words[i].includes(word)){
+            new_array.push(all_words[i]);
+            found=1;
+        }
+        if (all_words[i] == word){
+            can_disable=1
+        }
+    }
+    if (found ==0){
+        document.getElementById(table_id).innerHTML="No Match.";
+        document.getElementById(continue_id).disabled=true;
+    }
+    else if (found==2){
+        document.getElementById(table_id).innerHTML="Please enter a response.";
+        document.getElementById(continue_id).disabled=true;
+    }
+    else{
+        // clears the table and replaces it with the new one.
+        if (can_disable==1) {
+            document.getElementById(continue_id).disabled=false;
+        }
+        else {
+            document.getElementById(continue_id).disabled=true;
+        }
+        document.getElementById(table_id).innerHTML="";
+        row_count=0;
+        var table = document.getElementById(table_id);
+        var row = table.insertRow(row_count);
+        row_count= row_count+1;
+        count = 0;
+        for(i=0;i<new_array.length;i++){
+            var y = row.insertCell(count);
+            y.innerHTML = new_array[i];
+            // if (count < 5){
+            if (count < 4){
+                // var y = row.insertCell(count);
+                // y.innerHTML = new_array[i];
+                count=count+1;
+            }
+            else{
+                var row = table.insertRow(row_count);
+                row_count= row_count+1;
+                count=0;
+            }
+        }
+    }
+
+}
+
+/* Save the experiment metadata at the end of the experiment */
+function SaveData(div) {
+  var where = document.getElementById(div);
+  // Save the total experiment time
+  var totalTime = (new Date()) - startTime;
+  var totalTimeFromDemoStart = (new Date()) - startTimeDemo;
+  // Log the time that the experiment was completed.
+  var newDate = new Date();
+  $('#assignmentId').val(GetAssignmentId());
+  var curID = (IsOnTurk())? GetAssignmentId() : prompt("Doesn't look like you " +
+  "are on Turk, so you're probably testing. Enter an ID to save your data with:", "id");
+
+  // Only give the bonus if you actually did the experiment.
+  if (demo_trial_idx == demo_stim.length) {
+    if (trial_idx == (sounds_order.length)){
+      // Completed all of the trials, give full Bonus.
+      TOTAL_EXPERIMENT_BONUS += (trial_idx) * 0.02 + COMPLETION_BONUS_AMOUNT
+    } else if (trial_idx > 0) { // if trial_idx == 0 then the person didn't do any trials and doesn't get an extra bonus.
+      // Partial completion
+      // Give a per-trial bonus of $0.02
+      TOTAL_EXPERIMENT_BONUS += (trial_idx-1) * 0.02 // EXPERIMENT_BONUS_AMOUNT * (trial_idx-1) / sounds_order.length
+    }
+  }
+
+  document.getElementById("display_BONUS_amount").innerHTML = TOTAL_EXPERIMENT_BONUS.toFixed(2);
+
+  // Log the Assignment ID
+  var a = document.createElement("input");
+  a.setAttribute("type", "hidden");
+  a.setAttribute("id", "curID");
+  a.setAttribute("name", "curID");
+  a.setAttribute("value", curID);
+  where.appendChild(a);
+
+  // Log the worker ID
+  var b = document.createElement("input");
+  b.setAttribute("type", "hidden");
+  b.setAttribute("id", "workerID");
+  b.setAttribute("name", "workerID");
+  b.setAttribute("value", GetWorkerId());
+  where.appendChild(b);
+
+  // Log the current Time
+  var c = document.createElement("input");
+  c.setAttribute("type", "hidden");
+  c.setAttribute("id", "curTime");
+  c.setAttribute("name", "curTime");
+  c.setAttribute("value", newDate.today() + " @ " + newDate.timeNow());
+  where.appendChild(c);
+
+  // Log the user Agent
+  var d = document.createElement("input");
+  d.setAttribute("type", "hidden");
+  d.setAttribute("id", "userAgent");
+  d.setAttribute("name", "userAgent");
+  d.setAttribute("value", navigator.userAgent);
+  where.appendChild(d);
+
+  // Log the window Width
+  var e = document.createElement("input");
+  e.setAttribute("type", "hidden");
+  e.setAttribute("id", "windowWidth");
+  e.setAttribute("name", "windowWidth");
+  e.setAttribute("value", $(window).width());
+  where.appendChild(e);
+
+  // Log the window Height
+  var f = document.createElement("input");
+  f.setAttribute("type", "hidden");
+  f.setAttribute("id", "windowHeight");
+  f.setAttribute("name", "windowHeight");
+  f.setAttribute("value", $(window).height());
+  where.appendChild(f);
+
+  // Log the screen Width
+  var g = document.createElement("input");
+  g.setAttribute("type", "hidden");
+  g.setAttribute("id", "screenWidth");
+  g.setAttribute("name", "screenWidth");
+  g.setAttribute("value", screen.width);
+  where.appendChild(g);
+
+  // Log the screen Height
+  var h = document.createElement("input");
+  h.setAttribute("type", "hidden");
+  h.setAttribute("id", "screenHeight");
+  h.setAttribute("name", "screenHeight");
+  h.setAttribute("value", screen.height);
+  where.appendChild(h);
+
+  // Log the total Time
+  var i = document.createElement("input");
+  i.setAttribute("type", "hidden");
+  i.setAttribute("id", "totalTime");
+  i.setAttribute("name", "totalTime");
+  i.setAttribute("value", totalTime);
+  where.appendChild(i);
+
+  // Log the total time from the start of the demo experiment
+  var i1 = document.createElement("input");
+  i1.setAttribute("type", "hidden");
+  i1.setAttribute("id", "totalTimeFromDemoStart");
+  i1.setAttribute("name", "totalTimeFromDemoStart");
+  i1.setAttribute("value", totalTimeFromDemoStart);
+  where.appendChild(i1);
+
+  // Log the comments
+  var j1 = document.createElement("input");
+  j1.setAttribute("type", "hidden");
+  j1.setAttribute("id", "comments_full");
+  j1.setAttribute("name", "comments_full");
+  j1.setAttribute("value", $('#comments_full').val());
+  where.appendChild(j1);
+
+  // Log the comments
+  var j2 = document.createElement("input");
+  j2.setAttribute("type", "hidden");
+  j2.setAttribute("id", "comments_partial");
+  j2.setAttribute("name", "comments_partial");
+  j2.setAttribute("value", $('#comments_partial').val());
+  where.appendChild(j2);
+
+  // Log the comments
+  var j3 = document.createElement("input");
+  j3.setAttribute("type", "hidden");
+  j3.setAttribute("id", "comments_end_after_demo");
+  j3.setAttribute("name", "comments_end_after_demo");
+  j3.setAttribute("value", $('#comments_end_after_demo').val());
+  where.appendChild(j3);
+
+  // Log the start Time
+  var k = document.createElement("input");
+  k.setAttribute("type", "hidden");
+  k.setAttribute("id", "startTime");
+  k.setAttribute("name", "startTime");
+  k.setAttribute("value", startTime);
+  where.appendChild(k);
+
+  // Log the full bonus
+  var l = document.createElement("input");
+  l.setAttribute("type", "hidden");
+  l.setAttribute("id", "bonusPayment");
+  l.setAttribute("name", "bonusPayment");
+  l.setAttribute("value", TOTAL_EXPERIMENT_BONUS);
+  where.appendChild(l);
+
+  //TODO Add these to the saving
+  // Log the sound order constructed at the beginning
+  var m = document.createElement("input");
+  m.setAttribute("type", "hidden");
+  m.setAttribute("id", "sounds_order");
+  m.setAttribute("name", "sounds_order");
+  m.setAttribute("value", sounds_order);
+  where.appendChild(m);
+
+  // Log the sounds presented (should be same as sound_order if things are working)
+  var n = document.createElement("input");
+  n.setAttribute("type", "hidden");
+  n.setAttribute("id", "sounds_presented_array");
+  n.setAttribute("name", "sounds_presented_array");
+  n.setAttribute("value", sounds_presented_array);
+  where.appendChild(n);
+
+  // Log the experiment responses
+  var o = document.createElement("input");
+  o.setAttribute("type", "hidden");
+  o.setAttribute("id", "responses_array");
+  o.setAttribute("name", "responses_array");
+  o.setAttribute("value", responses_array);
+  where.appendChild(o);
+
+  // Log the start times for each trial
+  var p = document.createElement("input");
+  p.setAttribute("type", "hidden");
+  p.setAttribute("id", "trial_start_time_array");
+  p.setAttribute("name", "trial_start_time_array");
+  p.setAttribute("value", trial_start_time_array);
+  where.appendChild(p);
+
+  // Log the audio play time for each trial
+  var q = document.createElement("input");
+  q.setAttribute("type", "hidden");
+  q.setAttribute("id", "audio_play_time_array");
+  q.setAttribute("name", "audio_play_time_array");
+  q.setAttribute("value", audio_play_time_array);
+  where.appendChild(q);
+
+  // Log the trial end time for each trial
+  var r = document.createElement("input");
+  r.setAttribute("type", "hidden");
+  r.setAttribute("id", "trial_end_time_array");
+  r.setAttribute("name", "trial_end_time_array");
+  r.setAttribute("value", trial_end_time_array);
+  where.appendChild(r);
+
+  // Log if the trial was a demo trial
+  var s = document.createElement("input");
+  s.setAttribute("type", "hidden");
+  s.setAttribute("id", "isDemoExperimentArray");
+  s.setAttribute("name", "isDemoExperimentArray");
+  s.setAttribute("value", isDemoExperimentArray);
+  where.appendChild(s);
+
+  // Log the trial index
+  var t = document.createElement("input");
+  t.setAttribute("type", "hidden");
+  t.setAttribute("id", "allTrialIDXArray");
+  t.setAttribute("name", "allTrialIDXArray");
+  t.setAttribute("value", allTrialIDXArray);
+  where.appendChild(t);
+
+  // Log the trial index
+  var u= document.createElement("input");
+  u.setAttribute("type", "hidden");
+  u.setAttribute("id", "base_src_path");
+  u.setAttribute("name", "base_src_path");
+  u.setAttribute("value", base_src_path);
+  where.appendChild(u);
+
+  // Log the trial index
+  var v = document.createElement("input");
+  v.setAttribute("type", "hidden");
+  v.setAttribute("id", "json_config_name");
+  v.setAttribute("name", "json_config_name");
+  v.setAttribute("value", json_config_name);
+  where.appendChild(v);
+
+  // Log the number of DEMO trials correct
+  var w = document.createElement("input");
+  w.setAttribute("type", "hidden");
+  w.setAttribute("id", "DEMO_correct_answers");
+  w.setAttribute("name", "DEMO_correct_answers");
+  w.setAttribute("value", DEMO_correct_answers);
+  where.appendChild(w);
+
+  // Log the broken trials if they exist
+  var trials19= document.createElement("input");
+  trials19.setAttribute("type", "hidden");
+  trials19.setAttribute("id", "brokenTrialArray");
+  trials19.setAttribute("name", "brokenTrialArray");
+  trials19.setAttribute("value", brokenTrialArray);
+  where.appendChild(trials19);
+
+}
+
+function saveDemographicsQuestions(div) {
+var where = document.getElementById(div);
+gend = document.getElementsByName("SaveQ1Gender");
+where.appendChild(gend);
+age = document.getElementsByName("SaveQ2age");
+where.appendChild(age);
+country = document.getElementsByName("SaveQ3Country");
+where.appendChild(country);
+headphones = document.getElementsByName("SaveQ4headphones");
+where.appendChild(headphones);
+hearing = document.getElementsByName("SaveQ5hearingloss");
+where.appendChild(hearing);
+music = document.getElementsByName("SaveQ6music");
+where.appendChild(music);
+yrs_music = document.getElementsByName("Saveyrs_music");
+where.appendChild(yrs_music);
+yrs_music_training = document.getElementsByName("Saveyrs_music_training");
+where.appendChild(yrs_music_training);
+
+}
+
+function ReturnRadio(HC){
+ind++;
+var radios = document.getElementsByName(HC);
+for (var i = 0, length = radios.length; i < length; i++) {
+if (radios[i].checked) {
+if (radios[i].value==HC_key[ind]){HC_corr++}
+break;
+}
+}
+}
+
+function stim_play(stim) {
+var sounds = document.getElementsByTagName('audio');
+for(i=0; i<sounds.length; i++) sounds[i].pause();
+var clip = document.getElementById(stim);
+clip.play();
+audio_play_time_array = audio_play_time_array.concat(new Date())
+}
+
+function clickDisable(button)
+{
+document.getElementById(button).disabled=true;
+}
+
+function clickEnable(button)
+{
+document.getElementById(button).disabled=false;
+}
+
+
+function DisableRadio(radName) {
+var x = document.getElementsByName(radName);
+for (var i = 0, length = x.length; i < length; i++) {
+if (x[i].checked){}
+else {x[i].disabled=true;}
+}
+}
+
+function DisableRadios() {
+var all_input = document.getElementsByTagName('input');
+for (i = 0; i < all_input.length; i++)
+{
+if (all_input[i].type == "radio")
+{
+all_input[i].checked = false;
+}
+}
+}
+
+function p_T_ind_up() {
+p_T_ind++;
+}
+
+
+
+//FilledOut.js: check if worker has completed the survey
+
+var ans = [];
+
+function answer(index) {
+if(ans.indexOf(index) == -1) {
+ans.push(index);
+}
+}
+
+function allAnswered(num) {
+var done = true;
+for(var i = 1; i <= num; i++) {
+done = done && (ans.indexOf(i) != -1);
+}
+return done
+}
+
+var pans = [];
+
+function answerPage(pagenum) {
+if(pans.indexOf(pagenum) == -1) {
+pans.push(pagenum);
+}
+}
+
+function pageAnswered(pagenum) {
+return pans.indexOf(pagenum) != -1;
+}
+</script><script>
+var current = 1; //current page
+var moved = []; //pages moved by the rand
+var movedto = [];
+
+//takes randomization into account
+function effectivePage(pagenum) {
+var index = moved.indexOf(pagenum);
+if(index == -1) {
+return pagenum;
+}else{
+return movedto[index];
+}
+}
+
+var numberText = []; //stores divs to be updated on page change
+var pntexts = []; //texts in them
+function makePageNumber(text) { //text: e.g., "Page 1 / 4"
+var temp = text.split(1);
+var texts = [temp[0], temp[1]];
+//needed if there are more 1's (e.g. if total # of pages contains the digit 1)
+if(temp.length > 2) {
+for(var i = 2; i < temp.length; i++) {
+texts[1] += 1 + temp[i];
+}
+}
+document.writeln("<p><div id='pagenumberdiv" + numberText.length + "'></div></p>");
+loadPageNumber(("pagenumberdiv" + numberText.length), texts);
+}
+function loadPageNumber(id, texts) {
+var newone = document.getElementById(id);
+numberText.push(newone);
+pntexts.push(texts);
+updatePageNumbers();
+}
+function updatePageNumbers() {
+for(var i = 0; i < numberText.length; i++) {
+numberText[i].innerHTML = pntexts[i][0] + current + pntexts[i][1];
+}
+}
+
+//make one vanish and the other appear
+function swap(vanish, appear) {
+document.getElementById(vanish).style.display = "none";
+//document.getElementById(appear).style.display = "inline";
+document.getElementById(appear).style.display = "";
+updatePageNumbers();
+}
+
+//go to the next page
+function next() {
+current++;
+swap(effectivePage(current - 1), effectivePage(current));
+}
+
+function endHIT() {
+current++;
+SaveData(effectivePage(current - 1))
+swap(effectivePage(current - 1), "SUBMISSION_PAGE");
+}
+
+
+function back() {
+    current--;
+    swap(effectivePage(current + 1), effectivePage(current));
+}
+//shuffles the array
+Array.prototype.shuffle = function () {
+    for (var i = this.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = this[i];
+        this[i] = this[j];
+        this[j] = tmp;
+    }
+
+    return this;
+}
+
+//randomize order of trials i through j (I dont use this chunk but it might be useful; credit Alper)
+function randomize(i, j) {
+    ar = [];
+    ar2 = [];
+    for(var k = i; k <= j; k++) {
+        ar.push(k);
+        ar2.push(k);
+    }
+    ar2.shuffle();
+    for(var k = 0; k < ar.length; k++) {
+        if(moved.indexOf(ar[k]) != -1) {
+            alert("Error: same index randomized twice.");
+        }else{
+            moved.push(ar[k]);
+            movedto.push(ar2[k]);
+        }
+    }
+}
+
+</script>
+<script
+src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<style type="text/css">.wrapper {
+height: 80%;
+width: 100%;
+display: table;
+}
+
+.page {
+display: table-cell;
+vertical-align: middle;
+}
+
+.cell {
+margin: 0 auto;
+padding: 10px;
+width: 850px;
+}
+
+#pagenum {
+text-align: center;
+font-style: italic;
+}
+.disclaimer {
+font-weight: bold;
+color: #555555;
+}
+
+.warning {
+font-weight: bold;
+}
+</style>
+<div class="wrapper">
+<div class="page" id="1">
+<div class="cell">
+<div align="center">
+<h1>Word Recognition</h1>
+<!--The below statement MUST appear as the first page on any MIT turk study--></div>
+
+<div>Disclaimer: This HIT is part of a scientific research project. Your decision to complete this HIT is voluntary. There is no way for us to identify you. The only information we will have, in addition to your responses, is the time at which you completed the survey. The results of the research may be presented at scientific meetings or published in scientific journals. Clicking on the 'Continue' button on the bottom of this page indicates that you are at least 18 years of age, and agree to complete this HIT voluntarily.</div>
+
+<div>&nbsp;</div>
+
+<div class="warning"><strong>THIS HIT IS LONG AND TAKES APPROXIMATELY ONE HOUR TO COMPLETE. DO NOT ACCEPT THIS HIT IF YOU DO NOT HAVE A FULL HOUR TO COMPLETE THE HIT.&nbsp;</strong></div>
+
+<div class="warning">&nbsp;</div>
+
+<div class="warning"><strong>We monitor the responses for this HIT and obvious cheating or guessing is grounds for rejection or a $0 bonus payment. If you accept this HIT please follow instructions for the full experiment!&nbsp;</strong></div>
+
+<div class="warning">&nbsp;</div>
+
+<div class="warning"><strong>Accepting this HIT if you have done this task in the past may result in a rejection. If you accept this HIT then realize you have completed it, please return the HIT immediately. Thank you!&nbsp;</strong></div>
+
+<div class="warning">&nbsp;</div>
+
+<div class="warning">Please answer every question; blank response fields will result in an invalid submission.</div>
+
+<div>&nbsp;</div>
+
+<div class="warning">YOU MUST WEAR HEADPHONES OR EARBUDS TO DO THIS HIT! If your browser does not play both of the noise sounds below, do not accept this hit (some versions of Firefox will not play the first sound).</div>
+
+<div class="warning">You may only participate in this HIT once.</div>
+
+<p>
+<audio id="myTestAudio" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_word_rec_metamers/example_noise_for_calibration.wav" type="audio/mpeg">Your user agent does not support the HTML5 Audio element.</audio>
+<input onclick="stim_play('myTestAudio') " type="button" value="Check sound 1 before Accepting HIT" /></p>
+
+<audio id="myAudio2" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/noise_calib_stim.wav" type="audio/mpeg">Your user agent does not support the HTML5 Audio element.</audio>
+<input onclick="stim_play('myAudio2') " type="button" value="Check sound 2 before Accepting HIT" />
+<p>&nbsp;</p>
+
+<div class="warning">PAY SCHEME</div>
+
+<div>This HIT pays $0.25 for a short task (less than 5 mins).</div>
+
+<div>If performance is good on the first task, the HIT will automatically continue to another short task for a $0.50 BONUS (an additional 5-10 mins).</div>
+
+<div>If performance is good on the second task, the HIT will automatically continue to a longer task (an additional 50-60 mins).</div>
+
+<div>Turkers will receive a BONUS of $0.02 for each completed trial in the longer task, and a completion BONUS of $3.50 for completing all 416 trials, for a total BONUS of $12.32 upon completion of the full HIT.</div>
+
+<p>&nbsp;</p>
+
+<!-- UNCOMMENT TO GO THROUGH HEADPHONE CHECK AND DEMOGRAPHICS -->
+ <input onclick="next();init_experiment()" type="button" value="Continue" />
+
+<!-- UNCOMMENT TO SKIP HEADPHONE CHECK AND DEMOGRAPHICS -->
+<!--<input onclick="swap('1', '6');" type="button" value="Continue" /></div>-->
+
+<p>&nbsp;</p>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="2" style="display: none;"><!--Page 2 gets demographic info-->
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<p>1. What is your gender?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q1Gender" type="radio" value="Male" /></td>
+			<td><span class="answertext">Male</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q1Gender" type="radio" value="Female" /></td>
+			<td><span class="answertext">Female</span></td>
+		</tr>
+        <tr>
+			<td valign="middle"><input name="Q1Gender" type="radio" value="Nonbinary" /></td>
+			<td><span class="answertext">Non-binary</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;2. What is your age?</p>
+
+<p><input id="Q2age" name="Q2age" size="6" type="text" /></p>
+
+<p>3. Country?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q3Country" type="radio" value="USA" /></td>
+			<td><span class="answertext">United States</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q3Country" type="radio" value="India" /></td>
+			<td><span class="answertext">Canada</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q3Country" type="radio" value="Other" /></td>
+			<td><span class="answertext">Other</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>4. Are you using in-ear headphones or over-the-ear headphones?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q4headphones" type="radio" value="inear" /></td>
+			<td><span class="answertext">In-ear headphones / earbuds</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q4headphones" type="radio" value="overear" /></td>
+			<td><span class="answertext">Over-the-ear headphones</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>5. Are you using wired or bluetooth headphones?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q4bheadphones" type="radio" value="wired" /></td>
+			<td><span class="answertext">Wired</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q4bheadphones" type="radio" value="bluetooth" /></td>
+			<td><span class="answertext">Bluetooth</span></td>
+		</tr>
+	</tbody>
+</table>
+
+
+<p>6. Do you have any hearing loss?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q5hearingloss" type="radio" value="noHL" /></td>
+			<td><span class="answertext">Not aware of any hearing loss</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q5hearingloss" type="radio" value="yesHL" /></td>
+			<td><span class="answertext">Yes, I have some hearing loss</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>7. Have you ever known how to play a musical instrument?</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q6music" type="radio" value="musician" /></td>
+			<td><span class="answertext">Yes</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q6music" type="radio" value="nonmusician" /></td>
+			<td><span class="answertext">No</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;If so, how many years did you play?</p>
+
+<p><input id="yrs_music" name="yrs_music" size="6" type="text" /></p>
+
+<p>&nbsp;If so, how many years were you formally trained?</p>
+
+<p><input id="yrs_music_training" name="yrs_music_training" size="6" type="text" /></p>
+
+<p>&nbsp;</p>
+
+
+<p>8. Identify my race as:</p>
+
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q7Demography" type="radio" value="AmericanIndian" /></td>
+			<td><span class="answertext">American Indian/Alaska Native</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q7Demography" type="radio" value="Asian" /></td>
+			<td><span class="answertext">Asian</span></td>
+		</tr>
+        <tr>
+			<td valign="middle"><input name="Q7Demography" type="radio" value="NativeHawaiian" /></td>
+			<td><span class="answertext">Native Hawaiian or Other Pacific Islander</span></td>
+		</tr>
+        <tr>
+			<td valign="middle"><input name="Q7Demography" type="radio" value="Black" /></td>
+			<td><span class="answertext">Black or African American</span></td>
+		</tr>
+        <tr>
+			<td valign="middle"><input name="Q7Demography" type="radio" value="White" /></td>
+			<td><span class="answertext">White</span></td>
+		</tr>
+        <tr>
+			<td valign="middle"><input name="Q7Demography" type="radio" value="MoreThanOne" /></td>
+			<td><span class="answertext">More than One Race</span></td>
+		</tr>
+
+	</tbody>
+</table>
+
+
+<p>9. I identify my ethnicity as:</p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+	<tbody>
+		<tr>
+			<td valign="middle"><input name="Q8Demography" type="radio" value="Hispanic" /></td>
+			<td><span class="answertext">Hispanic/Latinx</span></td>
+		</tr>
+		<tr>
+			<td valign="middle"><input name="Q8Demography" type="radio" value="NotHispanic" /></td>
+			<td><span class="answertext">Not Hispanic or Latinx</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<div class="warning">Please answer every question; blank response fields will result in an invalid submission!</div>
+
+<div>&nbsp;</div>
+
+<div class="warning">Press 'Continue' when complete to begin audio calibration.</div>
+<input onclick="endExperimentDueToError();" type="button" value="Continue" />
+<p>&nbsp;</p>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="3" style="display: none;"><!--Page 3 does rough level calibration-->
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<p>&nbsp;</p>
+
+<div class="warning">You must be wearing headphones to do this HIT!</div>
+
+<p>&nbsp;</p>
+
+<div class="warning">First, set your computer volume to about 25% of maximum.</div>
+
+<p>&nbsp;</p>
+
+<div class="warning">Level Calibration</div>
+
+<div>Press the button, then turn up the volume on your computer until the sound is at a comfortable level.</div>
+
+<p>&nbsp;</p>
+
+<div class="warning">Play the calibration sound as many times as you like.</div>
+
+<p>
+<audio id="myAudio" src="https://mcdermottlab.mit.edu/mturk_stimuli/word_recognition_v1/example_noise_for_calibration.wav" type="audio/mpeg">Your user agent does not support the HTML5 Audio element.</audio>
+<input onclick="stim_play('myAudio') " type="button" value="Calibration" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<div class="warning">Press 'Continue' when level calibration is complete.</div>
+<input onclick="next();" type="button" value="Continue" />
+<p>&nbsp;</p>
+</div>
+</div>
+
+<audio id="tone_calib" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/HC_tone_lab_calib_inphase.wav" type="audio/mpeg">&nbsp;</audio>
+
+<audio id="antiphase_HC_2_1" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/antiphase_HC_ISO.wav" type="audio/mpeg">&nbsp;</audio>
+
+<audio id="antiphase_HC_3_1" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/antiphase_HC_IOS.wav" type="audio/mpeg">&nbsp;</audio>
+
+<audio id="antiphase_HC_1_2" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/antiphase_HC_SOI.wav" type="audio/mpeg">&nbsp;</audio>
+
+<audio id="antiphase_HC_1_1" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/antiphase_HC_SIO.wav" type="audio/mpeg">&nbsp;</audio>
+
+<audio id="antiphase_HC_2_2" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/antiphase_HC_OSI.wav" type="audio/mpeg">&nbsp;</audio>
+
+<audio id="antiphase_HC_3_2" src="https://mcdermottlab.mit.edu/mturk_stimuli/audio_calibration/antiphase_HC_OIS.wav" type="audio/mpeg">&nbsp;</audio>
+<script>
+var HC_but_1 = "antiphase_HC_".concat(HC_key[0],"_",HC_version[0]);
+var HC_but_2 = "antiphase_HC_".concat(HC_key[1],"_",HC_version[1]);
+var HC_but_3 = "antiphase_HC_".concat(HC_key[2],"_",HC_version[2]);
+var HC_but_4 = "antiphase_HC_".concat(HC_key[3],"_",HC_version[3]);
+var HC_but_5 = "antiphase_HC_".concat(HC_key[4],"_",HC_version[4]);
+var HC_but_6 = "antiphase_HC_".concat(HC_key[5],"_",HC_version[5]);
+</script>
+
+<div class="wrapper">
+<div class="page" id="4" style="display: none;">
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<p>&nbsp;</p>
+
+<div class="warning">When you hit 'Play', you will hear three sounds separated by silences.</div>
+
+<p>&nbsp;</p>
+
+<p>Simply judge WHICH SOUND WAS SOFTEST(quietest)-- 1, 2, or 3?</p>
+
+<p>&nbsp;</p>
+
+<div class="warning">Test sounds can only be played once!</div>
+
+<p>&nbsp;</p>
+
+<p><button id="antiphase_HC_b1" onclick="stim_play(HC_but_1); clickDisable('antiphase_HC_b1')" type="button" value="Calibration">Play</button></p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+<tbody>
+<tr>
+<td valign="center"><input name="HC1" type="radio" value="1" /></td>
+<td><span class="answertext">FIRST sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC1" type="radio" value="2" /></td>
+<td><span class="answertext">SECOND sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC1" type="radio" value="3" /></td>
+<td><span class="answertext">THIRD sound was SOFTEST</span></td>
+</tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p><button id="antiphase_HC_b2" onclick="stim_play(HC_but_2); clickDisable('antiphase_HC_b2')" type="button" value="Calibration">Play</button></p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+<tbody>
+<tr>
+<td valign="center"><input name="HC2" type="radio" value="1" /></td>
+<td><span class="answertext">FIRST sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC2" type="radio" value="2" /></td>
+<td><span class="answertext">SECOND sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC2" type="radio" value="3" /></td>
+<td><span class="answertext">THIRD sound was SOFTEST</span></td>
+</tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p><button id="antiphase_HC_b3" onclick="stim_play(HC_but_3); clickDisable('antiphase_HC_b3')" type="button" value="Calibration">Play</button></p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+<tbody>
+<tr>
+<td valign="center"><input name="HC3" type="radio" value="1" /></td>
+<td><span class="answertext">FIRST sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC3" type="radio" value="2" /></td>
+<td><span class="answertext">SECOND sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC3" type="radio" value="3" /></td>
+<td><span class="answertext">THIRD sound was SOFTEST</span></td>
+</tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<div class="warning">'Continue'.</div>
+<input onclick="ReturnRadio('HC1'); ReturnRadio('HC2'); ReturnRadio('HC3'); next();" type="button" value="Continue" />
+<p>&nbsp;</p>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="5" style="display: none;">
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<p>&nbsp;</p>
+
+<p><button id="antiphase_HC_b4" onclick="stim_play(HC_but_4); clickDisable('antiphase_HC_b4')" type="button" value="Calibration">Play</button></p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+<tbody>
+<tr>
+<td valign="center"><input name="HC4" type="radio" value="1" /></td>
+<td><span class="answertext">FIRST sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC4" type="radio" value="2" /></td>
+<td><span class="answertext">SECOND sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC4" type="radio" value="3" /></td>
+<td><span class="answertext">THIRD sound was SOFTEST</span></td>
+</tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p><button id="antiphase_HC_b5" onclick="stim_play(HC_but_5); clickDisable('antiphase_HC_b5')" type="button" value="Calibration">Play</button></p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+<tbody>
+<tr>
+<td valign="center"><input name="HC5" type="radio" value="1" /></td>
+<td><span class="answertext">FIRST sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC5" type="radio" value="2" /></td>
+<td><span class="answertext">SECOND sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC5" type="radio" value="3" /></td>
+<td><span class="answertext">THIRD sound was SOFTEST</span></td>
+</tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p><button id="antiphase_HC_b6" onclick="stim_play(HC_but_6); clickDisable('antiphase_HC_b6')" type="button" value="Calibration">Play</button></p>
+
+<table border="0" cellpadding="0" cellspacing="4">
+<tbody>
+<tr>
+<td valign="center"><input name="HC6" type="radio" value="1" /></td>
+<td><span class="answertext">FIRST sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC6" type="radio" value="2" /></td>
+<td><span class="answertext">SECOND sound was SOFTEST</span></td>
+</tr>
+<tr>
+<td valign="center"><input name="HC6" type="radio" value="3" /></td>
+<td><span class="answertext">THIRD sound was SOFTEST</span></td>
+</tr>
+</tbody>
+</table><script>
+    function passfail(div){
+        var where = document.getElementById(div);
+        var x = document.createElement("input");
+        x.setAttribute("type", "hidden");
+        x.setAttribute("id", "HC_correct");
+        x.setAttribute("name", "HC_correct");
+        x.setAttribute("value", HC_corr);
+        where.appendChild(x);
+
+        // Save the time when the headphone check ends
+        var t = document.createElement("input");
+        t.setAttribute("type", "hidden");
+        t.setAttribute("id", "HeadphoneCheckEndTime");
+        t.setAttribute("name", "HeadphoneCheckEndTime");
+        t.setAttribute("value", (new Date()));
+        where.appendChild(t);
+        if (HC_corr<5) {endHIT();}
+        else {next();}
+    }
+</script>
+
+<p>&nbsp;</p>
+<!--the function defined above is implemented when they hit the 'continue' button-->
+
+<p>&nbsp;</p>
+
+<div class="warning">Press 'Continue' when complete.</div>
+<input onclick="ReturnRadio('HC4'); ReturnRadio('HC5'); ReturnRadio('HC6'); passfail('5');" type="button" value="Continue" />
+<p>&nbsp;</p>
+</div>
+</div>
+
+<div class="wrapper">
+<div class="page" id="6" style="display: none;"><!--Page 6 introduces the paradigm and gives practice/demo stim-->
+<div class="cell">
+<div align="center">&nbsp;</div>
+
+<div class="warning">INSTRUCTIONS</div>
+
+<p>&nbsp;</p>
+
+<div>This study assesses the conditions in which spoken words can be identified. </div>
+<p>On each trial you will hear a series of two-second sound clips taken from an old newscast and your task is to identify the word spoken at the middle of the clip -- i.e., that overlaps with the one-second mark in the two-second clip. You will only be able to play each clip once so listen carefully. There will often be words before or after the mid-point word you are asked to report, so you may occasionally be uncertain as to which word you are supposed to report. Just make your best guess.</p>
+
+<p>There are approximately 800 possible words that you might hear. These words are listed on the next page to help you familiarize yourself with them (but you will also be able to access this dictionary during the experiment so don't worry about memorizing them).</p>
+
+<p>Once you start typing in the response box the dictionary words that are compatible will appear below the box to assist with spelling. Some words might be harder to hear than others, but you still need to submit an answer for each trial.</p>
+
+<p>There will be a short demo experiment to get you started, which will take less than 5 minutes and pay a bonus of $0.50. If you do well on this task, you will be directed to the full experiment consisting of <span id="display_total_experiment_trials"></span> trials, which should take approximately 50-60 minutes. Each trial of the full experiment will earn a Bonus of $0.02 and completing all trials will award a completion bonus of $3.50.</p>
+
+<p>This task is meant to be challenging. There will be some trials that you get wrong, and that is okay. Just do your best for each trial.</p>
+
+<p>&nbsp;</p>
+<font color="red">NOTE: This page disables the RETURN key to prevent accidental submission before the task is complete. You will need to click NEXT and SUBMIT buttons with the mouse.</font>
+
+<p>&nbsp;</p>
+
+
+<p>&nbsp;</p>
+
+<p id="TF1">&nbsp;</p>
+
+<div>Continue to the task.</div>
+<input onclick="swap('6', 'word_dict');word_dict();" type="button" value="Continue" /></div>
+</div>
+<script>
+    function word_dict(){
+        //Function displays table of all the words in the dictionary.
+        var table = document.getElementById("all_words_dict_table");
+        var row = table.insertRow(0);
+        row_count= 1;
+        count = 0;
+        for(i=0;i<all_words.length;i++){
+            if (count <5){
+                var y = row.insertCell(count);
+                y.innerHTML = all_words[i];
+                count=count+1;
+            }
+            else{
+                var row = table.insertRow(row_count);
+                row_count= row_count+1;
+                count=0;
+            }
+        }
+    }
+</script>
+
+<div class="wrapper">
+    <div class="page" id='word_dict' style="display: none;"><!--Page 6 introduces the paradigm and lists all of the words-->
+        <div class="cell">
+            <div align="center">&nbsp;</div>
+            <div class="warning">Dictionary</div>
+            <p> There are 793 possible words that you might hear.  You will find all 793 listed below.  You will notice that there are proper nouns (like "John" or "Japan"), and many of the words are economic or political (like "firms", "democrats", "insurance", etc.).  If you need help spelling a word during the experiment, you can access the dictionary by typing any part your answer into the input box and possible words will appear below the input box. </p>
+            <table id="all_words_dict_table">
+            </table>
+
+
+            <p>&nbsp;</p>
+
+            <div>Continue to the task.</div>
+            <input onclick="swap('word_dict', 'DEMO_INSTRUCTIONS');" type="button" value="Continue" /></div>
+    </div>
+
+    <!-- Make the audio object that will play the demo audio -->
+    <audio id="DEMO_clip" src="https://mcdermottlab.mit.edu/mturk_stimuli/word_recognition_v1/example_noise_for_calibration.wav" type="audio/mpeg">&nbsp;</audio>
+
+    <div class="wrapper">
+        <div class="page" id="DEMO_INSTRUCTIONS" style="display: none;"><!--Page 6 introduces the paradigm and gives practice/demo stim-->
+            <div class="cell">
+                <div align="center">&nbsp;</div>
+
+                <p>To help you familiarize yourself with the task, we are going to go through a short demo before starting the actual experiment. These words are representative of the difficulty level you will encounter during the experiment. There will be some that you get wrong, and that is okay. Do your best on each trial.</p>
+
+                <p>&nbsp;</p>
+
+                <div>Continue to the task.</div>
+                <input onclick="swap('DEMO_INSTRUCTIONS', 'DEMO_TRIALS');replaceDemoTrial('DEMO_clip', 'DEMO_TRIALS', 'DEMO_word_response')" type="button" value="Continue" /></div>
+        </div>
+
+        <script>
+
+
+            </script>
+        <div class="page" id="DEMO_TRIALS" style="display: none;"><!--THIS PAGE IS THE TESTING PAGE. Instead of changing pages from here on, we just use the same page and swap out the stim and reset the buttons after every trial.-->
+            <div class="cell">
+                <div class="warning">DEMO SECTION</div>
+                <div>Your task is to identify the word spoken at the mid-point of the clip -- i.e., that overlaps with the one-second mark in each clip.</div>
+                <div>Reminder: You will only be able to play each clip once (the button will deactivate once the sound plays).</div>
+
+                <div>Click to play the clip and then enter your response in the input box.</div>
+                <div>Words in the dictionary that match what you have typed so far will appear below the input box.</div>
+                <br />
+                <div id="loading_demo_text">Loading audio...</div>
+                <button id="DEMO_button" disabled="disabled" onclick="stim_play('DEMO_clip');clickDisable('DEMO_button');clickEnable('DEMO_word_response')" type="button">Play</button>
+
+                <div>Instructions:</div>
+
+                <div>Enter your input into the box below.</div>
+
+                <div>Do not leave responses blank. You must enter a word contained in the dictionary. Once you start typing the set of possible words will appear below the response box.</div>
+
+                <div>Some words might be harder to hear than others, but you still need to submit an answer for each trial.</div>
+
+                <input id="DEMO_word_response" disabled="disabled" oninput="check_dictionary('DEMO_cont', 'DEMO_table', 'DEMO_word_response')" maxlength="20" name="DEMO_word_response" size="20" type="text" autocomplete="off"/>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><input disabled="disabled" id="DEMO_cont" onclick="replaceDemoTrial('DEMO_clip', 'DEMO_TRIALS', 'DEMO_word_response');clickDisable('DEMO_word_response')" type="button" value="Continue" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table id="DEMO_table">
+                </table>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+
+                <p id="DEMO_trialAnswer">&nbsp;</p>
+
+            </div>
+        </div>
+
+        <div class="wrapper">
+            <div class="page" id="EXP_INSTRUCTIONS" style="display: none;"><!--Page 6 introduces the paradigm and gives practice/demo stim-->
+                <div class="cell">
+                    <div align="center">&nbsp;</div>
+
+                    <p>  You completed the demo experiment and will be awarded a $0.50 Bonus. You can now move onto the main part of the experiment.</p>
+
+                    <p> The full experiment consists of <span id="display_total_experiment_trials2"></span> trials similar to those in the demo and should take ~50-60 minutes to complete. The dictionary used for these trials is the same as you used before. </p>
+
+                    <p>There will be stopping points 1/4, 1/2 and 3/4 of the way through the experiment. Please use these to stretch and try to concentrate during the whole experiment!</p>
+
+                    <p>When you are ready, press the "CONTINUE" button below.</p>
+
+                    <p>If you would prefer to exit the experiment now, press the "SUBMIT" button at the bottom of the page, and you will be redirected to a submission screen.</p>
+
+                    <p>&nbsp;</p>
+
+                    <div align="center">&nbsp;</div>
+                    <div>Continue to the task.</div>
+                    <input onclick="swap('EXP_INSTRUCTIONS', 'EXP_TRIALS');replaceExpTrial('EXP_clip', 'EXP_INSTRUCTIONS', 'EXP_word_response');displayTrialFunc()" type="button" value="Continue" />
+
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+
+                    <div align="center">&nbsp;</div>
+                    <div>Use the button below to submit early and only get a $0.50 Bonus (please use this if you had any problems running the demo experiment).</div>
+                    <input onclick="swap('EXP_INSTRUCTIONS', 'are_you_sure_you_want_to_exit')" type="button" value="Submit" />
+                    <p>&nbsp;</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Make the audio object that will play the EXP audio -->
+        <audio id="EXP_clip" src="https://mcdermottlab.mit.edu/mturk_stimuli/word_recognition_v1/example_noise_for_calibration.wav" type="audio/mpeg">&nbsp;</audio>
+
+        <!--EXP_TRIALS Runs the main part of the experiment for a full 295 trials.-->
+        <div class="page" id="EXP_TRIALS" style="display: none;">
+            <div class="cell">
+                <div class="warning">Trial # <span id="display_trial_idx"></span> out of <span id="display_total_experiment_trials3"></span></div>
+                <div>Your task is to identify the word spoken at the mid-point of the clip -- i.e., that overlaps with the one-second mark in each clip.</div>
+                <div>Reminder: You will only be able to play each clip once (the button will deactivate once the sound plays).</div>
+
+                <div>Click to play the clip and then enter your response in the input box.</div>
+                <div>Words in the dictionary that match what you have typed so far will appear below the input box.</div>
+
+
+                <br />
+                <div id="loading_exp_text">Loading audio...</div>
+                <button id="EXP_button" onclick="stim_play('EXP_clip');clickDisable('EXP_button');clickEnable('EXP_word_response')" type="button">Play</button>
+
+                <div>Instructions:</div>
+
+                <div>Enter your input into the box below.</div>
+
+                <div>Do not leave responses blank. You must enter a word contained in the dictionary. Once you start typing the set of possible words will appear below the response box.</div>
+
+                <div>Some words might be harder to hear than others, but you still need to submit an answer for each trial.</div>
+
+                <input id="EXP_word_response" disabled="disabled" oninput="check_dictionary('EXP_cont', 'EXP_table', 'EXP_word_response')" maxlength="20" name="EXP_word_response" size="20" type="text" autocomplete="off"/>
+
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><input disabled="disabled" id="EXP_cont" onclick="replaceExpTrial('EXP_clip', 'EXP_TRIALS', 'EXP_word_response');clickDisable('EXP_word_response');displayTrialFunc()" type="button" value="Continue" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table id="EXP_table">
+                </table>
+                <p id="EXP_trialAnswer">&nbsp;</p>
+
+                <div align="center">&nbsp;</div>
+                <div align="center">&nbsp;</div>
+                <!--Removing partial experiment completion because too many people are using it. -->
+                <div align="center">&nbsp;</div>
+                <div>Use the button below to submit early and receive a bonus of $0.02 per trial. You will receive an extra $3 completion bonus if you finish the whole experiment. You will not receive this completion bonus if you submit early. We really prefer if you complete the full experiment!</div>
+                <input onclick="swap('EXP_TRIALS', 'are_you_sure_you_want_to_exit_during_experiment')" type="button" value="Continue" />
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page" id="are_you_sure_you_want_to_exit_during_experiment" style="display: none;"><!-- This is the page you will be directed to if you want to leave early -->
+<div class="cell">
+<div class="warning">You clicked a button to submit early.</div>
+<p> If this was a mistake and you want to return to the experiment, use the "RETURN" button below. If not, hit the "SUBMIT" button to exit.</p>
+
+<p> You will only receive $0.02 for each trial if you submit early. You will receive an extra $3 completion bonus if you finish the whole experiment. You will not receive this completion bonus if you submit early.</p>
+
+<div>Exit and submit the hit.</div>
+<input onclick="swap('are_you_sure_you_want_to_exit_during_experiment','PARTIAL_EXP_COMPLETION');" type="button" value="SUBMIT" />
+<p>&nbsp;</p>
+
+<div>Return to the experiment.</div>
+<input onclick="swap('are_you_sure_you_want_to_exit_during_experiment', 'EXP_TRIALS')" type="button" value="RETURN" /></div>
+<p>&nbsp;</p>
+
+</div>
+</div>
+
+
+<div class="page" id="are_you_sure_you_want_to_exit" style="display: none;"><!-- This is the page you will be directed to if you want to leave early -->
+<div class="cell">
+<div class="warning">You clicked a button to submit early.</div>
+<p> If this was a mistake and you want to return to the experiment, use the "RETURN" button below. If not, hit the "SUBMIT" button to exit.</p>
+
+<div>Exit and submit the hit.</div>
+<input onclick="swap('are_you_sure_you_want_to_exit','end_after_demo');" type="button" value="SUBMIT" />
+<p>&nbsp;</p>
+
+<div>Return to the experiment.</div>
+<input onclick="swap('are_you_sure_you_want_to_exit', 'EXP_INSTRUCTIONS')" type="button" value="RETURN" /></div>
+<p>&nbsp;</p>
+
+</div>
+</div>
+
+
+<div class="page" id="end_after_demo" style="display: none;"><!--This is the page you will be directed to if you pass the headphone check but fail the demo check-->
+    <div class="cell">
+        <div class="warning">You've completed the experiment!</div>
+
+        <p>&nbsp;</p>
+
+        <div class="warning">Any comments for us? (Was it fun? Any technical difficulties?)</div>
+         <textarea name="comments_end_after_demo" id="comments_end_after_demo" style="width: 400px; height: 130px"></textarea>
+        <p>&nbsp;</p>
+
+          <p>&nbsp;</p>
+
+        <div>You will be awarded a BONUS of $0.50 (in addition to the automatic $0.25 for this HIT)</div>
+
+        <div>Please allow 48 hours for the bonus to be awarded.</div>
+
+        <div>(if you have not received this bonus after 48 hours, please contact us)</div>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+        <input onclick="SaveData('end_after_demo');swap('end_after_demo','SUBMISSION_PAGE');" type="button" value="Continue to submission page" />
+        <p>&nbsp;</p>
+    </div>
+</div>
+
+
+<div class="page" id="FULL_EXP_COMPLETION" style="display: none;"><!--This is the penultimate page. You only see this if you did all the trials-->
+    <div class="cell">
+        <div class="warning">Congratulations, you've completed the full experiment!</div>
+
+        <p>&nbsp;</p>
+
+        <div class="warning">Any comments for us? (Was it fun? Any technical difficulties?)</div>
+         <textarea name="comments_full" id="comments_full" style="width: 400px; height: 130px"></textarea>
+        <p>&nbsp;</p>
+
+          <p>&nbsp;</p>
+
+        <div>Please allow 48 hours for the bonus to be awarded.</div>
+
+        <div>(if you have not received this bonus after 48 hours, please contact us)</div>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+        <input onclick="SaveData('FULL_EXP_COMPLETION');swap('FULL_EXP_COMPLETION','SUBMISSION_PAGE');" type="button" value="Continue to submission page" />
+        <p>&nbsp;</p>
+    </div>
+</div>
+
+
+<div class="page" id="PARTIAL_EXP_COMPLETION" style="display: none;"><!--This is the penultimate page. You only see this if you did all the trials-->
+    <div class="cell">
+        <div class="warning">Congratulations, you completed the experiment!</div>
+
+        <p>&nbsp;</p>
+
+        <div class="warning">Any comments for us? (Was it fun? Any technical difficulties?)</div>
+         <textarea name="comments_partial" id="comments_partial" style="width: 400px; height: 130px"></textarea>
+        <p>&nbsp;</p>
+
+          <p>&nbsp;</p>
+
+          <div>Please allow 48 hours for the bonus to be awarded.</div>
+
+          <div>(if you have not received this bonus after 48 hours, please contact us)</div>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+
+        <p>&nbsp;</p>
+        <input onclick="SaveData('PARTIAL_EXP_COMPLETION');swap('PARTIAL_EXP_COMPLETION','SUBMISSION_PAGE');" type="button" value="Continue to submission page" />
+        <p>&nbsp;</p>
+    </div>
+</div>
+
+<div id="enderror">
+<div class="page" id="EndError" style="display: none;">
+  <div class="cell">
+    <div class="warning">Please return the HIT. We ran into a problem initializing the HIT. Your data is not saved. Sorry for the inconvenience. </div>
+</div>
+</div>
+</div>
+
+
+<div class="page" id="SUBMISSION_PAGE" style="display: none;"><!--This is the last page; if you fail the headphone check you come straight here-->
+<div class="cell">
+<div class="warning">You've completed the HIT -- Thanks for your help!</div>
+<div>You will be awarded a bonus of $<span id="display_BONUS_amount"></span>, in addition to the $0.25 for the HIT</div>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+<br />
+<input type="submit" value="Submit" /></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+

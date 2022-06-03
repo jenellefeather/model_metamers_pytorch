@@ -1,0 +1,3 @@
+An architecture based on ResNet50 but trained on cochleagrams. Random steps on the input are generating during the training process constrained with an L2 norm on the waveform =1. Control for the adversarially trained network with this step size. 
+The input to the network is a cochleagram representation rather than an image (rectangular rather than square). Square filters are still used throughout the network. 
+

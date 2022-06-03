@@ -1,0 +1,5 @@
+An architecture based on ResNet50 but trained on cochleagrams. 
+
+The input to the network is a cochleagram representation rather than an image (rectangular rather than square). Square filters are still used throughout the network. 
+
+

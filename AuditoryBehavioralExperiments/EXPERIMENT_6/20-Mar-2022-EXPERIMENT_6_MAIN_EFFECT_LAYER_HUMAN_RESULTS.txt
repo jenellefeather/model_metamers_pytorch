@@ -1,0 +1,37 @@
+######### | Audio Networks: Classical Models, SpecTemp | #########
+NUM_PERMUTATIONS = 10000
+
+Loading EXP6 - SpecTemp ||| EXPERIMENT_6/AudioExperiment6_network_vs_humans_datamatrix_spectemp_filters.mat
+Removing Human Recognition of Classifier Metamers for SPECTEMP ANOVA
+    0.7273    0.9091    0.8750    0.6176         0
+    0.9706    0.8824    0.9706    0.6765         0
+    0.8529    0.6765    0.8182    0.7273         0
+    0.8125    0.8235    0.5758    0.5000         0
+    0.8529    0.7500    0.8235    0.7273         0
+    0.7576    0.8235    0.8788    0.6471         0
+    0.8235    0.9118    0.7188    0.7353         0
+    0.8182    0.8824    0.6970    0.8125         0
+    0.7647    0.8485    0.7879    0.6176         0
+    0.7879    0.7353    0.7941    0.5312         0
+    0.9706    0.9118    0.9375    0.5758         0
+    0.8235    0.8438    0.7273    0.6765         0
+    0.8824    0.7941    0.8529    0.6364         0
+    0.9412    0.9118    0.8750    0.6765    0.0294
+    0.6765    0.8824    0.9091    0.6176         0
+    0.7941    0.7941    0.7576    0.7576         0
+    0.8485    0.8485    0.8182    0.6970    0.0294
+    0.6471    0.7059    0.5758    0.5294    0.0303
+    1.0000    0.9412    0.8788    0.7576    0.0294
+    0.8824    0.8485    0.8235    0.6562    0.0303
+
+EXP6 - SpecTemp Full ANOVA
+                          SumSq     DF     MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                         _______    __    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)           39.408     1       39.408    2994.8    2.2626e-22    2.2626e-22    2.2626e-22    2.2626e-22             NaN      
+    Error                0.25001    19     0.013159                                                                               NaN      
+    (Intercept):stage     10.043     4       2.5107    515.29    3.2577e-54     3.007e-47    3.2577e-54    3.1495e-15         0.96444      
+    Error(stage)          0.3703    76    0.0048724                                                                               NaN      
+
+EXP6 - SpecTemp F(observer) main effect: 515.2883
+EXP6 - SpecTemp p-value main effect: 0.0001

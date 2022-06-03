@@ -1,0 +1,76 @@
+######### | Visual Networks: Self-Supervised Experiment | #########
+NUM_PERMUTATIONS = 10000
+
+Loading EXP5 - ResNet50 (Standard) ||| EXP5_ANALYSIS/VisionExperiment5_network_vs_humans_datamatrix_resnet50.mat
+Using between factors
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 12).
+EXP5 - ResNet50 (Standard) Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG       pValueHF       pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    ___________    ___________    __________    __________________
+
+    (Intercept)                 209.4      1        209.4     14319     9.9419e-53     9.9419e-53     9.9419e-53    9.9419e-53             NaN      
+    network_or_human            11.79      1        11.79    806.24     3.9768e-28     3.9768e-28     3.9768e-28    3.9768e-28         0.95273      
+    Error                     0.58495     40     0.014624                                                                                  NaN      
+    (Intercept):layer          11.282      7       1.6116    399.73    9.9174e-142    7.2146e-113    1.2169e-132    1.9738e-22         0.90904      
+    network_or_human:layer     10.751      7       1.5359    380.94    4.4324e-139    9.0889e-111    3.6499e-130    4.7371e-22         0.90498      
+    Error(layer)               1.1289    280    0.0040318                                                                                  NaN      
+
+EXP5 - ResNet50 (Standard) F(observer) main effect: 806.2397
+EXP5 - ResNet50 (Standard) p-value main effect: 0.0001
+EXP5 - ResNet50 (Standard) F(stage, observer) interaction: 380.9439
+EXP5 - ResNet50 (Standard) p-value interaction: 0.0001
+
+Loading EXP5 - ResNet50 SIMCLR (Self-Supervised) ||| EXP5_ANALYSIS/VisionExperiment5_network_vs_humans_datamatrix_resnet50_simclr.mat
+Using between factors
+EXP5 - ResNet50 SIMCLR (Self-Supervised) Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                 201.1      1        201.1    9989.5    1.3021e-49    1.3021e-49    1.3021e-49    1.3021e-49             NaN      
+    network_or_human           6.6483      1       6.6483    330.25    6.2084e-21    6.2084e-21    6.2084e-21    6.2084e-21         0.89197      
+    Error                     0.80523     40     0.020131                                                                               NaN      
+    (Intercept):layer          7.4444      7       1.0635    141.26    5.1713e-88    2.8939e-72    3.6251e-85    1.0579e-14         0.77933      
+    network_or_human:layer     8.1271      7        1.161    154.22    3.4382e-92    1.1313e-75    3.3197e-89    2.6362e-15         0.79405      
+    Error(layer)               2.1079    280    0.0075284                                                                               NaN      
+
+EXP5 - ResNet50 SIMCLR (Self-Supervised) F(observer) main effect: 330.2542
+EXP5 - ResNet50 SIMCLR (Self-Supervised) p-value main effect: 0.0001
+EXP5 - ResNet50 SIMCLR (Self-Supervised) F(stage, observer) interaction: 154.2192
+EXP5 - ResNet50 SIMCLR (Self-Supervised) p-value interaction: 0.0001
+
+Loading EXP5 - ResNet50 MOCO_V2 (Self-Supervised) ||| EXP5_ANALYSIS/VisionExperiment5_network_vs_humans_datamatrix_resnet50_moco_v2.mat
+Using between factors
+EXP5 - ResNet50 MOCO_V2 (Self-Supervised) Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    __________    __________    __________    __________________
+
+    (Intercept)                227.85      1       227.85     13711     2.3609e-52    2.3609e-52    2.3609e-52    2.3609e-52             NaN      
+    network_or_human           6.1182      1       6.1182    368.18     8.7821e-22    8.7821e-22    8.7821e-22    8.7821e-22           0.902      
+    Error                     0.66469     40     0.016617                                                                                NaN      
+    (Intercept):layer          6.6734      7      0.95334    169.52     8.8412e-97    1.7717e-61    1.3404e-69    5.7355e-16         0.80909      
+    network_or_human:layer     7.8033      7       1.1148    198.22    1.4818e-104    2.4252e-66    3.9264e-75    4.3421e-17         0.83209      
+    Error(layer)               1.5747    280    0.0056239                                                                                NaN      
+
+EXP5 - ResNet50 MOCO_V2 (Self-Supervised) F(observer) main effect: 368.1819
+EXP5 - ResNet50 MOCO_V2 (Self-Supervised) p-value main effect: 0.0001
+EXP5 - ResNet50 MOCO_V2 (Self-Supervised) F(stage, observer) interaction: 198.2194
+EXP5 - ResNet50 MOCO_V2 (Self-Supervised) p-value interaction: 0.0001
+
+Loading EXP5 - ResNet50 BYOL (Self-Supervised) ||| EXP5_ANALYSIS/VisionExperiment5_network_vs_humans_datamatrix_resnet50_byol.mat
+Using between factors
+EXP5 - ResNet50 BYOL (Self-Supervised) Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF       pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    __________    ___________    __________    __________________
+
+    (Intercept)                198.68      1       198.68     26133     6.0644e-58    6.0644e-58     6.0644e-58    6.0644e-58             NaN      
+    network_or_human           8.6608      1       8.6608    1139.2      5.189e-31     5.189e-31      5.189e-31     5.189e-31         0.96608      
+    Error                     0.30411     40    0.0076028                                                                                 NaN      
+    (Intercept):layer          10.949      7       1.5642    276.44     9.121e-122    1.4416e-95    6.0178e-112    1.4506e-19         0.87359      
+    network_or_human:layer     12.633      7       1.8047    318.95    2.0577e-129    1.561e-101    5.7942e-119    1.1563e-20         0.88856      
+    Error(layer)               1.5843    280    0.0056583                                                                                 NaN      
+
+EXP5 - ResNet50 BYOL (Self-Supervised) F(observer) main effect: 1139.1589
+EXP5 - ResNet50 BYOL (Self-Supervised) p-value main effect: 0.0001
+EXP5 - ResNet50 BYOL (Self-Supervised) F(stage, observer) interaction: 318.951
+EXP5 - ResNet50 BYOL (Self-Supervised) p-value interaction: 0.0001

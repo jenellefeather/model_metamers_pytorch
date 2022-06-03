@@ -1,0 +1,94 @@
+######### | Visual Networks: Robust AlexNet Experiment | #########
+NUM_PERMUTATIONS = 10000
+
+Loading EXP4 - AlexNet (Standard) ||| EXP4_ANALYSIS/VisionExperiment4_network_vs_humans_datamatrix_alexnet.mat
+Using between factors
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 12).
+EXP4 - AlexNet (Standard) Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                154.71      1      154.71     10577    4.2986e-48    4.2986e-48    4.2986e-48    4.2986e-48             NaN      
+    network_or_human           21.693      1      21.693    1483.1    4.6712e-32    4.6712e-32    4.6712e-32    4.6712e-32         0.97502      
+    Error                     0.55582     38    0.014627                                                                               NaN      
+    (Intercept):layer          9.5017      8      1.1877    102.29    1.4357e-81    3.4884e-63    4.0017e-76    2.4916e-12         0.72912      
+    network_or_human:layer     10.451      8      1.3064    112.51    3.5096e-86     1.006e-66    2.0321e-80    6.4702e-13         0.74753      
+    Error(layer)                 3.53    304    0.011612                                                                               NaN      
+
+EXP4 - AlexNet (Standard) F(observer) main effect: 1483.0764
+EXP4 - AlexNet (Standard) p-value main effect: 0.0001
+EXP4 - AlexNet (Standard) F(stage, observer) interaction: 112.5101
+EXP4 - AlexNet (Standard) p-value interaction: 0.0001
+
+Loading EXPi - AlexNet Adversarial L2 Norm (EPS=3) ||| EXP4_ANALYSIS/VisionExperiment4_network_vs_humans_datamatrix_alexnet_l2_3_robust.mat
+Using between factors
+EXPi - AlexNet Adversarial L2 Norm (EPS=3) Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                212.26      1      212.26      5027    5.4902e-42    5.4902e-42    5.4902e-42    5.4902e-42              NaN     
+    network_or_human          0.07952      1     0.07952    1.8832       0.17801       0.17801       0.17801       0.17801         0.047219     
+    Error                      1.6045     38    0.042225                                                                                NaN     
+    (Intercept):layer          3.4479      8     0.43099     24.89    2.1514e-29     4.997e-24     6.817e-29    1.3742e-05          0.39577     
+    network_or_human:layer     2.5781      8     0.32226    18.611    1.0942e-22    1.2286e-18    2.6127e-22    0.00011006          0.32875     
+    Error(layer)               5.2641    304    0.017316                                                                                NaN     
+
+EXPi - AlexNet Adversarial L2 Norm (EPS=3) F(observer) main effect: 1.8832
+EXPi - AlexNet Adversarial L2 Norm (EPS=3) p-value main effect: 0.1917
+EXPi - AlexNet Adversarial L2 Norm (EPS=3) F(stage, observer) interaction: 18.6106
+EXPi - AlexNet Adversarial L2 Norm (EPS=3) p-value interaction: 0.0001
+
+Loading EXP4 - AlexNet Random L2 Norm (EPS=3) ||| EXP4_ANALYSIS/VisionExperiment4_network_vs_humans_datamatrix_alexnet_random_l2_3_perturb.mat
+Using between factors
+EXP4 - AlexNet Random L2 Norm (EPS=3) Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                160.23      1      160.23    6133.7    1.2841e-43    1.2841e-43    1.2841e-43    1.2841e-43             NaN      
+    network_or_human           22.412      1      22.412    857.96    1.0979e-27    1.0979e-27    1.0979e-27    1.0979e-27         0.95759      
+    Error                     0.99267     38    0.026123                                                                               NaN      
+    (Intercept):layer          9.3214      8      1.1652    114.72    3.8942e-87    2.1747e-65     2.588e-78    4.8954e-13         0.75117      
+    network_or_human:layer     11.427      8      1.4284    140.63    2.0195e-97    4.9494e-73    1.5849e-87    2.4379e-14         0.78727      
+    Error(layer)               3.0877    304    0.010157                                                                               NaN      
+
+EXP4 - AlexNet Random L2 Norm (EPS=3) F(observer) main effect: 857.958
+EXP4 - AlexNet Random L2 Norm (EPS=3) p-value main effect: 0.0001
+EXP4 - AlexNet Random L2 Norm (EPS=3) F(stage, observer) interaction: 140.6296
+EXP4 - AlexNet Random L2 Norm (EPS=3) p-value interaction: 0.0001
+
+Loading EXP4 - AlexNet Adversarial Linf Norm (EPS=8) ||| EXP4_ANALYSIS/VisionExperiment4_network_vs_humans_datamatrix_alexnet_linf_8_robust.mat
+Using between factors
+EXP4 - AlexNet Adversarial Linf Norm (EPS=8) Full ANOVA
+                              SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)               143.83      1      143.83    3669.9    2.0596e-39    2.0596e-39    2.0596e-39    2.0596e-39             NaN      
+    network_or_human           1.455      1       1.455    37.125     4.244e-07     4.244e-07     4.244e-07     4.244e-07         0.49417      
+    Error                     1.4893     38    0.039193                                                                               NaN      
+    (Intercept):layer          3.502      8     0.43775    18.214    3.0503e-22    5.8818e-18    2.1323e-21    0.00012657         0.32402      
+    network_or_human:layer    3.8918      8     0.48647    20.241     1.719e-24    9.9246e-20    1.4919e-23    6.2613e-05         0.34754      
+    Error(layer)              7.3061    304    0.024033                                                                               NaN      
+
+EXP4 - AlexNet Adversarial Linf Norm (EPS=8) F(observer) main effect: 37.1245
+EXP4 - AlexNet Adversarial Linf Norm (EPS=8) p-value main effect: 0.0001
+EXP4 - AlexNet Adversarial Linf Norm (EPS=8) F(stage, observer) interaction: 20.2415
+EXP4 - AlexNet Adversarial Linf Norm (EPS=8) p-value interaction: 0.0001
+
+Loading EXP4 - AlexMet Random Linf Norm (EPS=8) ||| EXP4_ANALYSIS/VisionExperiment4_network_vs_humans_datamatrix_alexnet_random_linf8_perturb.mat
+Using between factors
+EXP4 - AlexMet Random Linf Norm (EPS=8) Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                159.45      1      159.45     12050    3.6376e-49    3.6376e-49    3.6376e-49    3.6376e-49             NaN      
+    network_or_human           19.642      1      19.642    1484.4     4.596e-32     4.596e-32     4.596e-32     4.596e-32         0.97504      
+    Error                     0.50282     38    0.013232                                                                               NaN      
+    (Intercept):layer          10.715      8      1.3393    115.22    2.3797e-87    1.9316e-64    6.4575e-77    4.5989e-13         0.75198      
+    network_or_human:layer     10.818      8      1.3522    116.32    8.0256e-88    8.7354e-65    2.4892e-77    4.0068e-13         0.75376      
+    Error(layer)               3.5338    304    0.011624                                                                               NaN      
+
+EXP4 - AlexMet Random Linf Norm (EPS=8) F(observer) main effect: 1484.3749
+EXP4 - AlexMet Random Linf Norm (EPS=8) p-value main effect: 0.0001
+EXP4 - AlexMet Random Linf Norm (EPS=8) F(stage, observer) interaction: 116.3231
+EXP4 - AlexMet Random Linf Norm (EPS=8) p-value interaction: 0.0001

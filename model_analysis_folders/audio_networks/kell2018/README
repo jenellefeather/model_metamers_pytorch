@@ -1,0 +1,6 @@
+An architecture based on that used in Kell et al, Neuron (2018). 
+
+The architecture is a single branch, only performing a word recognition task. 
+
+The cochleagram input to the networks differs from that used in the paper. Specifically, the cochleagram is not reshaped to 256x256. The kernel sizes of the networks are resized with this in mind (becoming rectangular rather than square). 
+

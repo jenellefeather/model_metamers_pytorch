@@ -1,0 +1,38 @@
+######### | Auditory Networks: Standard Supervised Experiment | #########
+NUM_PERMUTATIONS = 10000
+
+Loading EXP1 - CochResNet50 (Standard) ||| EXPERIMENT_1/AudioExperiment1_network_vs_humans_datamatrix_cochresnet50.mat
+Using between factors
+EXP1 - CochResNet50 (Standard) Full ANOVA
+                              SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              ______    ___    _________    ______    ___________    __________    __________    __________    __________________
+
+    (Intercept)               229.06      1       229.06    8484.4     2.7879e-46    2.7879e-46    2.7879e-46    2.7879e-46             NaN      
+    network_or_human           12.63      1        12.63    467.84     5.8204e-23    5.8204e-23    5.8204e-23    5.8204e-23         0.92488      
+    Error                     1.0259     38     0.026998                                                                                NaN      
+    (Intercept):layer         8.4646      8       1.0581     230.1    4.1035e-124    8.3647e-66      1.55e-74    1.0445e-17         0.85826      
+    network_or_human:layer    8.3668      8       1.0459    227.44    1.8561e-123    1.8345e-65    3.7883e-74    1.2631e-17         0.85684      
+    Error(layer)              1.3979    304    0.0045983                                                                                NaN      
+
+EXP1 - CochResNet50 (Standard) F(observer) main effect: 467.8374
+EXP1 - CochResNet50 (Standard) p-value main effect: 0.0001
+EXP1 - CochResNet50 (Standard) F(stage, observer) interaction: 227.4406
+EXP1 - CochResNet50 (Standard) p-value interaction: 0.0001
+
+Loading EXP1 - CochCNN9 (Standard) ||| EXPERIMENT_1/AudioExperiment1_network_vs_humans_datamatrix_kell2018.mat
+Using between factors
+EXP1 - CochCNN9 (Standard) Full ANOVA
+                              SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF       pValueLB     partial_etaSquared
+                              ______    ___    _________    ______    ___________    __________    ___________    __________    __________________
+
+    (Intercept)               201.22      1       201.22      6820     1.7319e-44    1.7319e-44     1.7319e-44    1.7319e-44             NaN      
+    network_or_human          16.284      1       16.284    551.93     3.1159e-24    3.1159e-24     3.1159e-24    3.1159e-24         0.93559      
+    Error                     1.1211     38     0.029504                                                                                 NaN      
+    (Intercept):layer         9.9889      9       1.1099     198.7     4.582e-130    1.1146e-95    3.6177e-117    1.1254e-16         0.83946      
+    network_or_human:layer    9.5099      9       1.0567    189.17    5.0153e-127    1.8476e-93    1.9505e-114    2.4661e-16         0.83272      
+    Error(layer)              1.9103    342    0.0055858                                                                                 NaN      
+
+EXP1 - CochCNN9 (Standard) F(observer) main effect: 551.9296
+EXP1 - CochCNN9 (Standard) p-value main effect: 0.0001
+EXP1 - CochCNN9 (Standard) F(stage, observer) interaction: 189.1697
+EXP1 - CochCNN9 (Standard) p-value interaction: 0.0001
