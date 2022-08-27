@@ -134,8 +134,8 @@ python make_null_distributions -N 100 -I 0 -R 0 -D 'model_analysis_folders/audio
 Setup configuration for your own model
 ======================================
 1) Create a new directory to store all of the model analysis files. Example directories to copy and modify are at the following: 
-* Visual Example: [model_analysis_folders/visual_networks/example_blank_directory](model_analysis_folders/visual_models/example_blank_directory)
-* Audio Example: [model_analysis_folders/audio_networks/example_blank_directory](model_analysis_folders/audio_models/example_blank_directory)
+* Visual Example: [model_analysis_folders/visual_networks/example_blank_directory](model_analysis_folders/visual_networks/example_blank_directory)
+* Audio Example: [model_analysis_folders/audio_networks/example_blank_directory](model_analysis_folders/audio_networks/example_blank_directory)
 
 2) If you are using a new architecture, place the architecture in robustness/imagenet_models or robustness/audio_models. If you are
 using an included architecture, you can move onto step 3. Otherwise, the architecture should have the following: 
