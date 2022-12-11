@@ -41,7 +41,7 @@ import h5py
 import argparse
 
 import torch
-from robustness.tools import load_audio_wav_resample
+from robustness.tools.audio_helpers import load_audio_wav_resample
 from analysis_scripts.default_paths import fMRI_DATA_PATH
 
 import itertools
