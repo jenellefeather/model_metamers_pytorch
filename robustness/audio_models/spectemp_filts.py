@@ -3,8 +3,7 @@ import torch as ch
 from .custom_modules import FakeReLUM, FakeReLU
 from .layers import conv2d_same, pool2d_same
 import sys
-sys.path.append('/om/user/jfeather/python-packages/spectrotemporal-filters')
-import spectemp
+from . import spectemp
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as signal

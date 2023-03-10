@@ -14,6 +14,7 @@ import os
 from analysis_scripts.input_helpers import generate_import_image_functions
 from robustness.model_utils import make_and_restore_model
 from analysis_scripts.helpers_16_choice import force_16_choice
+from analysis_scripts.default_paths import WORDNET_ID_TO_HUMAN_PATH
 
 import numpy as np
 from robustness.model_utils import make_and_restore_model
@@ -81,7 +82,7 @@ def run_audio_metamer_generation(SIDX, LOSS_FUNCTION, INPUTIMAGEFUNCNAME, RANDOM
     # imagenet_idx_to_wnid = {v:k for k, v in ds.wnid_to_idx.items()}
     
     # Get the WNID
-    with open('/om4/group/mcdermott/user/jfeather/projects/model_metamers/16-class-ImageNet/wordnetID_to_human_identifier.txt', mode='r') as infile:
+    with open(WORDNET_ID_TO_HUMAN_PATH, mode='r') as infile:
         reader = csv.reader(infile, delimiter='\t')
         wnid_imagenet_name = {rows[0]:rows[1] for rows in reader}
     

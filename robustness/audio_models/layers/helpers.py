@@ -2,8 +2,10 @@
 Hacked together by Ross Wightman
 """
 from itertools import repeat
-from torch._six import container_abcs
-
+try:
+    from torch._six import container_abcs
+except:
+    import collections.abc as container_abcs
 
 # From PyTorch internals
 def _ntuple(n):
