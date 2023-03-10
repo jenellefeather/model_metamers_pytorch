@@ -83,7 +83,7 @@ def make_loaders(workers, batch_size, transforms, data_path, data_aug=True,
 
     if subset_val is not None:
         try:
-            val_sample_count = len(test_set.samples)
+            test_sample_count = len(test_set.samples)
         except:
             test_sample_count = test_set.__len__()
         if subset_type_val == 'rand':
