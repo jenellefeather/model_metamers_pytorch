@@ -1,5 +1,4 @@
 import torch.nn as nn
-from torchvision.models.utils import load_state_dict_from_url
 import torch.utils.model_zoo as model_zoo
 from .custom_modules import FakeReLUM
 from .layers import conv2d_same, pool2d_same
