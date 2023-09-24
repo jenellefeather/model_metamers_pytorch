@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/498570644.svg)](https://zenodo.org/badge/latestdoi/498570644)
+
 Model Metamers
 ==============
 
