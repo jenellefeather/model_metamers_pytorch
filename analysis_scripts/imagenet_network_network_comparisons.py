@@ -16,9 +16,9 @@ import pickle as pckl
 from PIL import Image
 import argparse
 
-import all_model_info
+from model_analysis_folders import all_model_info
 
-from network_network_helpers import * 
+from analysis_scripts.network_network_helpers import * 
 
 import build_network
 
