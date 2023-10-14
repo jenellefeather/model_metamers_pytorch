@@ -7,12 +7,10 @@
 #SBATCH --time=03:30:00
 #SBATCH --cpus-per-task=2
 
-module add openmind/singularity
 module add openmind/cuda/9.1
 module add openmind/cudnn/9.1-7.0.5
 
-export CONDA_ENVS_PATH=~/my-envs:/om4/group/mcdermott/user/jfeather/conda_envs_files
-source activate /om4/group/mcdermott/user/jfeather/conda_envs_files/pytorch
+source activate /om4/group/mcdermott/user/jfeather/conda_envs_files/test_metamers_public
 
 cp ../../../analysis_scripts/measure_layer_activations_165_natural_sounds_pytorch.py .
 
