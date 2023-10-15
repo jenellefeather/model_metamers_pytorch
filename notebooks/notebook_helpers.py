@@ -206,13 +206,13 @@ def responses_network_by_layer_mat(all_subjects_answers, model_layers, condition
 
 def combined_experiment_response_dictionaries(all_dicts):
     # all_dicts -- list of dictionaries output from respones_network_by_layer
+    # if a particular model was included in mulitple runs, combine the participant responses
     combined_experiment_dict = {}
     for experiment in all_dicts:
         for model in experiment.keys():
             if model not in list(combined_experiment_dict.keys()):
                 combined_experiment_dict[model] = experiment[model]
             else:
-                print('Duplicate model %s'%model)
                 for layer in combined_experiment_dict[model].keys():
                     combined_experiment_dict[model][layer] = combined_experiment_dict[model][layer] + experiment[model][layer]
                     
