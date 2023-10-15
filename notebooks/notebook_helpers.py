@@ -8,6 +8,9 @@ from IPython import display
 from IPython.display import Image
 from IPython.core.display import HTML
 
+from scipy.io import loadmat
+
+
 visual_experiment_dict_by_name = {
     'Visual Experiment 1 (Standard Models, Figure 2)': 1,
     'Visual Experiment 2 (Self-Supervised Models, Figure 3)': 5,
@@ -189,3 +192,36 @@ def display_all_audio_models_for_experiment(exp_name,
 
                 grid[model_idx+1, 0] = out
     display.display(grid)
+
+
+## These are used for loading in the data
+def responses_network_by_layer_mat(all_subjects_answers, model_layers, conditions, experiment_params):
+    network_response_dict = {}    
+    condition_idx = list(conditions).index('Human  ')
+    
+    for l_idx, layer in enumerate(model_layers):
+        network_response_dict[layer.strip()] = list(all_subjects_answers[:,l_idx,condition_idx])
+        
+    return network_response_dict
+
+def combined_experiment_response_dictionaries(all_dicts):
+    # all_dicts -- list of dictionaries output from respones_network_by_layer
+    combined_experiment_dict = {}
+    for experiment in all_dicts:
+        for model in experiment.keys():
+            if model not in list(combined_experiment_dict.keys()):
+                combined_experiment_dict[model] = experiment[model]
+            else:
+                print('Duplicate model %s'%model)
+                for layer in combined_experiment_dict[model].keys():
+                    combined_experiment_dict[model][layer] = combined_experiment_dict[model][layer] + experiment[model][layer]
+                    
+    return combined_experiment_dict
+
+def unpack_experiment_mat(mat_file_path):
+    mat_contents = loadmat(mat_file_path)
+    participant_data_matrix = mat_contents['participant_data_matrix']
+    model_layers = mat_contents['model_layers']
+    conditions = mat_contents['conditions']
+    participants = mat_contents['participants'] # participant IDs were removed for public release
+    return participant_data_matrix, model_layers, conditions, participants
