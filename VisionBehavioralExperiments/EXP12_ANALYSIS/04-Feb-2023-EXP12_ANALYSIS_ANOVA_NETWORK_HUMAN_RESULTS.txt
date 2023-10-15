@@ -1,0 +1,87 @@
+######### | Visual Networks: Large Dataset Training | #########
+NUM_PERMUTATIONS = 10000
+Loading EXP12 - CLIP_ResNet50 ||| EXP12_ANALYSIS/VisionExperiment12_network_vs_humans_datamatrix_CLIP_resnet50.mat
+Using between factors
+EXP12 - CLIP_ResNet50 Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                186.54      1       186.54     10811    2.6978e-50    2.6978e-50    2.6978e-50    2.6978e-50             NaN      
+    network_or_human           8.9255      1       8.9255    517.26    1.7126e-24    1.7126e-24    1.7126e-24    1.7126e-24         0.92822      
+    Error                     0.69022     40     0.017256                                                                               NaN      
+    (Intercept):layer          7.4059      6       1.2343     172.1    5.6343e-84    5.2687e-69    2.2521e-79    4.4837e-16         0.81141      
+    network_or_human:layer     7.7963      6       1.2994    181.17    3.7683e-86    8.8441e-71    1.9987e-81    1.9314e-16         0.81914      
+    Error(layer)               1.7213    240    0.0071721                                                                               NaN      
+
+EXP12 - CLIP_ResNet50 F(observer) main effect: 517.2581
+EXP12 - CLIP_ResNet50 p-value main effect: 0.0001
+EXP12 - CLIP_ResNet50 F(stage, observer) interaction: 181.1714
+EXP12 - CLIP_ResNet50 p-value interaction: 0.0001
+Loading EXP12 - CLIP_ViT-B_32 ||| EXP12_ANALYSIS/VisionExperiment12_network_vs_humans_datamatrix_CLIP_ViT-B_32.mat
+Using between factors
+EXP12 - CLIP_ViT-B_32 Full ANOVA
+                               SumSq     DF      MeanSq       F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    ________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                281.82      1      281.82     14706    5.8442e-53    5.8442e-53    5.8442e-53    5.8442e-53             NaN      
+    network_or_human           11.585      1      11.585    604.54    9.2821e-26    9.2821e-26    9.2821e-26    9.2821e-26         0.93794      
+    Error                     0.76657     40    0.019164                                                                               NaN      
+    (Intercept):layer          8.2115      9     0.91238    105.04    4.5948e-95    5.5901e-64    6.1086e-76    9.4588e-13         0.72421      
+    network_or_human:layer     8.6405      9     0.96006    110.53    6.0161e-98    6.7982e-66     3.152e-78    4.4708e-13         0.73427      
+    Error(layer)                3.127    360    0.008686                                                                               NaN      
+
+EXP12 - CLIP_ViT-B_32 F(observer) main effect: 604.5389
+EXP12 - CLIP_ViT-B_32 p-value main effect: 0.0001
+EXP12 - CLIP_ViT-B_32 F(stage, observer) interaction: 110.5291
+EXP12 - CLIP_ViT-B_32 p-value interaction: 0.0001
+Loading EXP12 - SWSL_ResNet50 ||| EXP12_ANALYSIS/VisionExperiment12_network_vs_humans_datamatrix_SWSL_resnet50.mat
+Using between factors
+EXP12 - SWSL_ResNet50 Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue       pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    __________    __________    __________    __________    __________________
+
+    (Intercept)                205.52      1       205.52     16376    6.8281e-54    6.8281e-54    6.8281e-54    6.8281e-54             NaN      
+    network_or_human           14.548      1       14.548    1159.3    3.6987e-31    3.6987e-31    3.6987e-31    3.6987e-31         0.96665      
+    Error                     0.50198     40      0.01255                                                                               NaN      
+    (Intercept):layer          8.9323      7        1.276    162.92    7.6435e-95    3.7926e-63    5.8326e-72    1.0915e-15         0.80288      
+    network_or_human:layer     9.0297      7         1.29     164.7    2.2667e-95     1.707e-63    2.3378e-72    9.1588e-16         0.80459      
+    Error(layer)                2.193    280    0.0078323                                                                               NaN      
+
+EXP12 - SWSL_ResNet50 F(observer) main effect: 1159.2727
+EXP12 - SWSL_ResNet50 p-value main effect: 0.0001
+EXP12 - SWSL_ResNet50 F(stage, observer) interaction: 164.6985
+EXP12 - SWSL_ResNet50 p-value interaction: 0.0001
+Loading EXP12 - SWSL_ResNext101_32x8d ||| EXP12_ANALYSIS/VisionExperiment12_network_vs_humans_datamatrix_SWSL_resnext101_32x8d.mat
+Using between factors
+EXP12 - SWSL_ResNext101_32x8d Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    __________    __________    __________    __________________
+
+    (Intercept)                200.68      1       200.68     29754     4.5408e-59    4.5408e-59    4.5408e-59    4.5408e-59             NaN      
+    network_or_human           15.938      1       15.938    2363.1      3.369e-37     3.369e-37     3.369e-37     3.369e-37         0.98335      
+    Error                     0.26979     40    0.0067447                                                                                NaN      
+    (Intercept):layer          9.9405      7       1.4201     226.8    2.0195e-111     2.275e-78    3.8857e-90     4.459e-18         0.85007      
+    network_or_human:layer     9.9026      7       1.4147    225.93    3.1753e-111    3.1178e-78    5.5922e-90     4.759e-18         0.84959      
+    Error(layer)               1.7532    280    0.0062614                                                                                NaN      
+
+EXP12 - SWSL_ResNext101_32x8d F(observer) main effect: 2363.0796
+EXP12 - SWSL_ResNext101_32x8d p-value main effect: 0.0001
+EXP12 - SWSL_ResNext101_32x8d F(stage, observer) interaction: 225.9334
+EXP12 - SWSL_ResNext101_32x8d p-value interaction: 0.0001
+Loading EXP12 - ViT_LargePatch16_224 ||| EXP12_ANALYSIS/VisionExperiment12_network_vs_humans_datamatrix_vision_transformer_vit_large_patch16_224.mat
+Using between factors
+EXP12 - ViT_LargePatch16_224 Full ANOVA
+                               SumSq     DF      MeanSq        F         pValue        pValueGG      pValueHF      pValueLB     partial_etaSquared
+                              _______    ___    _________    ______    ___________    __________    __________    __________    __________________
+
+    (Intercept)                269.07      1       269.07     27270     2.5889e-58    2.5889e-58    2.5889e-58    2.5889e-58             NaN      
+    network_or_human           8.4065      1       8.4065    852.01      1.385e-28     1.385e-28     1.385e-28     1.385e-28         0.95516      
+    Error                     0.39466     40    0.0098666                                                                                NaN      
+    (Intercept):layer          8.0237      8        1.003    152.52    2.3084e-104    7.3535e-70    2.7131e-81    3.1469e-15         0.79223      
+    network_or_human:layer     8.3616      8       1.0452    158.94    1.2407e-106    2.3217e-71    4.7649e-83    1.6259e-15         0.79894      
+    Error(layer)               2.1043    320     0.006576                                                                                NaN      
+
+EXP12 - ViT_LargePatch16_224 F(observer) main effect: 852.014
+EXP12 - ViT_LargePatch16_224 p-value main effect: 0.0001
+EXP12 - ViT_LargePatch16_224 F(stage, observer) interaction: 158.941
+EXP12 - ViT_LargePatch16_224 p-value interaction: 0.0001
