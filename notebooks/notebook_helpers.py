@@ -12,12 +12,16 @@ from scipy.io import loadmat
 
 
 visual_experiment_dict_by_name = {
-    'Visual Experiment 1 (Standard Models, Figure 2)': 1,
-    'Visual Experiment 2 (Self-Supervised Models, Figure 3)': 5,
-    'Visual Experiment 3 (HMAX, Figure 4)': 6,
-    'Visual Experiment 4 (ResNet50 Adversarially Robust, Figure 5)': 3,
-    'Visual Experiment 5 (AlexNet Adversarially Robust, Figure 5)': 4,
-    'Visual Experiment 6 (Lowpass AlexNet and VOneNet, Figure 7)': 9,
+    'Visual Experiment 1 (Standard Models, Figure 2C)': 1,
+    'Visual Experiment 2 (Large-Scale Dataset Models, Figure 2D)':12,
+    'Visual Experiment 3 (Self-Supervised Models, Figure 3C)': 5,
+    'Visual Experiment 4 (IPCL AlexNetGN, Figure 3D)':16,
+    'Visual Experiment 5 (Stylized-ImageNet Trained Models)':10,
+    'Visual Experiment 6 (HMAX, Extended Data Figure 4)': 6,
+    'Visual Experiment 7 (ResNet50 Adversarially Robust, Figure 5)': 3,
+    'Visual Experiment 8 (AlexNet Adversarially Robust, Figure 5)': 4,
+    'Visual Experiment 12 (Lowpass AlexNet and VOneNet, Figure 7)': 9,
+    
 }
 
 audio_experiment_dict_by_name = {
@@ -34,7 +38,6 @@ def display_all_visual_models_for_experiment(exp_name,
                                ):
     
     exp_num = visual_experiment_dict_by_name[exp_name]
-    experiment_list = [1,5,6,3,4,9]
 
     experiment_name = all_model_info.TURK_IMAGE_EXPERIMENTS_GROUPINGS['experiment_%d'%exp_num]['paper_experiment_name']
     jsin_configs = all_model_info.TURK_IMAGE_EXPERIMENTS_GROUPINGS['experiment_%d'%exp_num]['experiment_params_web']
