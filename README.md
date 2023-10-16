@@ -1,8 +1,10 @@
 [![DOI](https://zenodo.org/badge/498570644.svg)](https://zenodo.org/badge/latestdoi/498570644)
 
-Model Metamers
+Model metamers reveal divergent invariances between biological and artificial neural networks.
+Feather, Leclerc, Mądry & McDermott. Nature Neuroscience (2023). 
 ==============
-
+![Model Metamer Generation, Human Experiments, and Example Visual Model Metamers](FigureExperimentLogic.png)
+==============
 ## Contents
 * [Overview](#overview)
 * [Repo Directories](#repo-directories)
