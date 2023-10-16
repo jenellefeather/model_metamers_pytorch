@@ -1,6 +1,6 @@
 [![DOI](https://zenodo.org/badge/498570644.svg)](https://zenodo.org/badge/latestdoi/498570644)
 
-Model metamers reveal divergent invariances between biological and artificial neural networks.
+Model metamers reveal divergent invariances between biological and artificial neural networks.<br>
 Feather, Leclerc, Mądry & McDermott. Nature Neuroscience (2023). 
 ==============
 ![Model Metamer Generation, Human Experiments, and Example Visual Model Metamers](FigureExperimentLogic.png)
