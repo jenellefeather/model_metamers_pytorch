@@ -44,6 +44,7 @@ class FeatureExtractor(ch.nn.Module):
 def make_and_restore_model(*_, arch, dataset, resume_path=None,
          parallel=True, pytorch_pretrained=False, strict=True,
          remap_checkpoint_keys={}, append_name_front_keys=None,
+         change_prefix_checkpoint={},
          arch_kwargs={}):
     """
     Makes a model and (optionally) restores it from a checkpoint.
@@ -64,6 +65,9 @@ def make_and_restore_model(*_, arch, dataset, resume_path=None,
         append_name_front_keys (list): if not none, for each element of the list 
             makes new keys in the state dict that have the element appended to the front
             of the name. Useful for transfer models, if they were saved without the attacker model class. 
+        change_prefix_checkpoint (dict) : for each element {old_prefix:new_prefix},
+            checks the state dict for entries that start with old_prefix and changes
+            that portion of the key to new_prefix.
     Returns: 
         A tuple consisting of the model (possibly loaded with checkpoint), and the checkpoint itself
     """
@@ -84,7 +88,12 @@ def make_and_restore_model(*_, arch, dataset, resume_path=None,
             if not ('model' in checkpoint):
                 state_dict_path = 'state_dict'
 
-            sd = checkpoint[state_dict_path]
+            try:
+                sd = checkpoint[state_dict_path]
+            except:
+                print('Missing state dict key %s from checkpoint. Assuming checkpoint is simply the state dictionary and we do not need a key'%state_dict_path)
+                sd = checkpoint
+
             if append_name_front_keys is not None:
                 new_sd = {}
                 for key_idx in range(len(append_name_front_keys)):
@@ -93,6 +102,10 @@ def make_and_restore_model(*_, arch, dataset, resume_path=None,
                 sd = new_sd
 
             sd = {k[len('module.'):]:v for k,v in sd.items()}
+
+            # The following blocks are used in specific cases where we are loading models that are trained with different
+            # module names than are used in this library.
+
             # Load models if the keys changed slightly
             for old_key, new_key in remap_checkpoint_keys.items():
                 print('mapping %s to %s'%(old_key, new_key))
@@ -102,6 +115,18 @@ def make_and_restore_model(*_, arch, dataset, resume_path=None,
                     del sd[old_key]
                 else:
                     sd[new_key]=sd.pop(old_key)
+            # Swaps out a prefix
+            for old_prefix, new_prefix in change_prefix_checkpoint.items():
+                sd_keys_temp = list(sd.keys())
+                for sd_key in sd_keys_temp:
+                    if type(old_prefix)==int: # If we need to add prefix to EVERYTHING
+                        sd[new_prefix + sd_key] = sd[sd_key]
+                        del sd[sd_key]
+                    else:
+                        if sd_key.startswith(old_prefix):
+                            sd[new_prefix + sd_key.split(old_prefix)[-1]] = sd[sd_key]
+                            del sd[sd_key]
+
             model.load_state_dict(sd, strict=strict)
             if parallel:
                 model = ch.nn.DataParallel(model)

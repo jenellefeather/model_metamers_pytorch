@@ -8,13 +8,20 @@ from IPython import display
 from IPython.display import Image
 from IPython.core.display import HTML
 
+from scipy.io import loadmat
+
+
 visual_experiment_dict_by_name = {
-    'Visual Experiment 1 (Standard Models, Figure 2)': 1,
-    'Visual Experiment 2 (Self-Supervised Models, Figure 3)': 5,
-    'Visual Experiment 3 (HMAX, Figure 4)': 6,
-    'Visual Experiment 4 (ResNet50 Adversarially Robust, Figure 5)': 3,
-    'Visual Experiment 5 (AlexNet Adversarially Robust, Figure 5)': 4,
-    'Visual Experiment 6 (Lowpass AlexNet and VOneNet, Figure 7)': 9,
+    'Visual Experiment 1 (Standard Models, Figure 2C)': 1,
+    'Visual Experiment 2 (Large-Scale Dataset Models, Figure 2D)':12,
+    'Visual Experiment 3 (Self-Supervised Models, Figure 3C)': 5,
+    'Visual Experiment 4 (IPCL AlexNetGN, Figure 3D)':16,
+    'Visual Experiment 5 (Stylized-ImageNet Trained Models)':10,
+    'Visual Experiment 6 (HMAX, Extended Data Figure 4)': 6,
+    'Visual Experiment 7 (ResNet50 Adversarially Robust, Figure 5)': 3,
+    'Visual Experiment 8 (AlexNet Adversarially Robust, Figure 5)': 4,
+    'Visual Experiment 12 (Lowpass AlexNet and VOneNet, Figure 7)': 9,
+    
 }
 
 audio_experiment_dict_by_name = {
@@ -31,7 +38,6 @@ def display_all_visual_models_for_experiment(exp_name,
                                ):
     
     exp_num = visual_experiment_dict_by_name[exp_name]
-    experiment_list = [1,5,6,3,4,9]
 
     experiment_name = all_model_info.TURK_IMAGE_EXPERIMENTS_GROUPINGS['experiment_%d'%exp_num]['paper_experiment_name']
     jsin_configs = all_model_info.TURK_IMAGE_EXPERIMENTS_GROUPINGS['experiment_%d'%exp_num]['experiment_params_web']
@@ -189,3 +195,36 @@ def display_all_audio_models_for_experiment(exp_name,
 
                 grid[model_idx+1, 0] = out
     display.display(grid)
+
+
+## These are used for loading in the data
+def responses_network_by_layer_mat(all_subjects_answers, model_layers, conditions, experiment_params):
+    network_response_dict = {}    
+    condition_idx = list(conditions).index('Human  ')
+    
+    for l_idx, layer in enumerate(model_layers):
+        network_response_dict[layer.strip()] = list(all_subjects_answers[:,l_idx,condition_idx])
+        
+    return network_response_dict
+
+def combined_experiment_response_dictionaries(all_dicts):
+    # all_dicts -- list of dictionaries output from respones_network_by_layer
+    # if a particular model was included in mulitple runs, combine the participant responses
+    combined_experiment_dict = {}
+    for experiment in all_dicts:
+        for model in experiment.keys():
+            if model not in list(combined_experiment_dict.keys()):
+                combined_experiment_dict[model] = experiment[model]
+            else:
+                for layer in combined_experiment_dict[model].keys():
+                    combined_experiment_dict[model][layer] = combined_experiment_dict[model][layer] + experiment[model][layer]
+                    
+    return combined_experiment_dict
+
+def unpack_experiment_mat(mat_file_path):
+    mat_contents = loadmat(mat_file_path)
+    participant_data_matrix = mat_contents['participant_data_matrix']
+    model_layers = mat_contents['model_layers']
+    conditions = mat_contents['conditions']
+    participants = mat_contents['participants'] # participant IDs were removed for public release
+    return participant_data_matrix, model_layers, conditions, participants
