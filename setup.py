@@ -27,7 +27,7 @@ requirements = [
 
 setup(
     name='model_metamers_pytorch',
-    version='0.1.0',
+    version='0.1.1',
     description='Model metamer generation in pytorch.',
     author='Jenelle Feather',
     author_email='jfeather@mit.edu',
