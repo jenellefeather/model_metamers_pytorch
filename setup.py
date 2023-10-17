@@ -7,9 +7,9 @@ setup(
     author='Jenelle Feather',
     author_email='jfeather@mit.edu',
     license='MIT',
-    packages=find_packages(include=['robustness', 'assets', 'analysis_scripts', 'model_analysis_folders']),
+    packages=find_packages(include=['robustness', 'assets', 'analysis_scripts', 'model_analysis_folders', 'notebooks']),
     install_requires=[
-        'chcochleagram @ git+ssh://git@github.com/jenellefeather/chcochleagram.git',
+        "chcochleagram @ git+https://github.com/jenellefeather/chcochleagram.git",
         'numpy',
         'matplotlib',
         'jupyter',
@@ -18,6 +18,6 @@ setup(
         'tqdm', 'grpcio', 'psutil', 'gitpython','py3nvml', 'cox',
         'scikit-learn', 'seaborn', 'torchvision', 'pandas',
         'numpy', 'scipy', 'GPUtil', 'dill', 'tensorboardX', 'tables',
-        'matplotlib','torchaudio'
+        'matplotlib','torchaudio', 'resampy',
     ],
 )
