@@ -1,29 +1,4 @@
-#!/usr/bin/env python
-
 from setuptools import setup
-
-with open('README.md') as readme_file:
-    readme = readme_file.read()
-
-requirements = [
-        "torch",
-        "torchvision",
-        "torchaudio",
-        "h5py",
-        "seaborn",
-        "pandas",
-        "numpy",
-        "matplotlib",
-        "scipy",
-        "jupyter",
-        "dill",
-        "cox",
-        "tables",
-        "tqdm",
-        "resampy",
-        "tensorboardX",
-        "chcochleagram @ git+https://github.com/jenellefeather/chcochleagram.git"
-]
 
 setup(
     name='model_metamers_pytorch',
@@ -31,8 +6,17 @@ setup(
     description='Model metamer generation in pytorch.',
     author='Jenelle Feather',
     author_email='jfeather@mit.edu',
-    long_description=readme,
-    install_requires=requirements,
-    license="MIT license",
-    keywords='adversarial, stochastic, metamers, audio, vision, robustness',
+    license='MIT',
+    install_requires=[
+        'chcochleagram @ git+https://git@github.com/jenellefeather/chcochleagram.git',
+        'numpy',
+        'matplotlib',
+        'jupyter',
+        'torch',
+        'scipy',
+        'tqdm', 'grpcio', 'psutil', 'gitpython','py3nvml', 'cox',
+        'scikit-learn', 'seaborn', 'torchvision', 'pandas',
+        'numpy', 'scipy', 'GPUtil', 'dill', 'tensorboardX', 'tables',
+        'matplotlib','torchaudio','resampy',
+    ],
 )
