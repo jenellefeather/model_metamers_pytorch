@@ -9,7 +9,7 @@ setup(
     license='MIT',
     packages=find_packages(include=['robustness', 'assets', 'analysis_scripts', 'model_analysis_folders']),
     install_requires=[
-        'chcochleagram @ git+ssh://git@github.com/jenellefeather/chcochleagram.git'
+        'chcochleagram @ git+ssh://git@github.com/jenellefeather/chcochleagram.git',
         'numpy',
         'matplotlib',
         'jupyter',
