@@ -54,3 +54,11 @@ cp /om4/group/mcdermott/user/jfeather/projects/robust_audio_networks/model_train
 
 18) AlexNet reduced aliasing architecture early checkpoint. Trained by jfeather on openmind cluster using 4 GEFORCEGTX1080TI GPUs with a total batch size of 256. Learning rate started at 0.01 and was dropped by a factor of 10 after every 50 epochs. Model was trained for a total of 120 epochs, but the early checkpoint was chosen so that it was as close to the ImageNet top 1% accuracy of the VOneAlexNet Guassian noise model with STD=4 but without being higher than that accuracy. 
 cp /om4/group/mcdermott/user/jfeather/projects/robust_audio_networks/model_training_directory/imagenet_networks/alexnet_reduced_aliasing_drop_after_50_epoch/b1b37fba-a2e5-4e2c-8350-b4211dfb7997/38_checkpoint.pt alexnet_reduced_aliasing_early_checkpoint.pt
+
+19) SWSL Resnet50 from https://github.com/facebookresearch/semi-supervised-ImageNet1K-models/blob/master/hubconf.py. wget https://dl.fbaipublicfiles.com/semiweaksupervision/model_files/semi_weakly_supervised_resnet50-16a12f1b.pth
+
+## Checkpoints that are just classification heads ##
+20) ImageNet Classification Head for the AlexNet IPCL model. Trained on fc7 using one cycle of the IPCL training code.
+ipcl_model_01_alexnet_fc7_ipcl_training_head_ipcl1_fc7_lincls_onecycle.pth.tar
+cp /net/oms.ib.cluster/om4/group/mcdermott/user/jfeather/projects/robust_audio_networks/model_training_directory/imagenet_networks/ipcl_model_01_alexnet_fc7_ipcl_training_head/weights/ipcl1_fc7_lincls_onecycle.pth.tar ipcl_model_01_alexnet_fc7_ipcl_training_head_ipcl1_fc7_lincls_onecycle.pth.tar
+
