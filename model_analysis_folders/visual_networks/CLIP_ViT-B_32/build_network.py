@@ -3,9 +3,8 @@ import sys
 from robustness import datasets
 from robustness.attacker import AttackerModel
 from robustness.model_utils import make_and_restore_model
-# sys.path.append('/om4/group/mcdermott/user/jfeather/projects/robust_audio_networks/robustness/robustness/imagenet_models/clip')
+from model_analysis_folders.all_model_info import IMAGENET_PATH
 from robustness.imagenet_models.clip import clip
-# import clip
 import torch 
 from PIL import Image
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -98,25 +97,9 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     ]
 
 
-#     ckpt_path = '../pytorch_checkpoints/clip_rn50.pt'
-#     model, _ = make_and_restore_model(arch='resnet50', dataset=ds, resume_path=ckpt_path,
-#                                       pytorch_pretrained=False, parallel=False, strict=True, 
-#                                       )
-
     device = "cuda" if torch.cuda.is_available() else "cpu"
-#     model, preprocess = clip.load("ViT-B/32", device=device, jit=False)
     model, preprocess = clip.load("ViT-B/32", device=torch.device("cpu"), jit=False)
     model.to(device)
-#     image = preprocess(Image.open("CLIP.png")).unsqueeze(0).to(device)
-#     print(image)
-#     text = clip.tokenize(["a diagram", "a dog", "a cat"]).to(device)
-
-#     with torch.no_grad():
-#         image_features = model.encode_image(image)
-#         text_features = model.encode_text(text)
-#     
-#         logits_per_image, logits_per_text = model(image, text)
-#         probs = logits_per_image.softmax(dim=-1).cpu().numpy()
 
     model = CLIPModelWithLabels(model)
 
@@ -129,7 +112,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
 
     if dataset_name=='ImageNetV2':
         # Check with ImageNetV2 because that is the posted accuracy for the checkpoint.
-        ds = datasets.ImageNet('ImageNetV2-matched-frequency', # '/om2/data/public/imagenet/images_complete/ilsvrc/',
+        ds = datasets.ImageNet('ImageNetV2-matched-frequency',
                            mean=torch.tensor([0.48145466, 0.4578275, 0.40821073]),
                            std=torch.tensor([0.26862954, 0.26130258, 0.27577711]),
                            label_mapping=imagenet2_labelmap,
@@ -138,7 +121,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
                            aug_train=transforms, # transforms,
                            aug_test=transforms)# transforms)
     elif dataset_name=='ImageNet':
-        ds = datasets.ImageNet('/om2/data/public/imagenet/images_complete/ilsvrc/', # '/om2/data/public/imagenet/images_complete/ilsvrc/',
+        ds = datasets.ImageNet(IMAGENET_PATH,
                            mean=torch.tensor([0.48145466, 0.4578275, 0.40821073]),
                            std=torch.tensor([0.26862954, 0.26130258, 0.27577711]),
                            min_value = 0,
@@ -152,34 +135,9 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     
     model = AttackerModel(model, ds)
 
-#     from imagenetv2_pytorch import ImageNetV2Dataset
-#     images = ImageNetV2Dataset(transform=preprocess)
-#     loader = torch.utils.data.DataLoader(images, batch_size=32, num_workers=4)
-
     # send the model to the GPU and return it.
     model.cuda()
     model.eval()
-
-#     with torch.no_grad():
-#         top1, top5, n = 0., 0., 0.
-#         for i, (images, target) in enumerate(tqdm(loader)):
-# L            images = images.cuda()
- #            target = target.cuda()
-
-#             # predict
-#             logits, _ = model(images)
-# 
-#             # measure accuracy
-#             acc1, acc5 = accuracy(logits, target, topk=(1, 5))
-#             top1 += acc1
-#             top5 += acc5
- #            n += images.size(0)
-# 
-#     top1 = (top1 / n) * 100
-#     top5 = (top5 / n) * 100
-
-#     print(f"Top-1 accuracy: {top1:.2f}")
-#     print(f"Top-5 accuracy: {top5:.2f}")
 
     if return_metamer_layers:
         return model, ds, metamer_layers

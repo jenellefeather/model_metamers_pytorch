@@ -6,6 +6,8 @@ from robustness.model_utils import make_and_restore_model
 from robustness.imagenet_models.clip import clip
 import torch 
 from PIL import Image
+from model_analysis_folders.all_model_info import IMAGENET_PATH
+
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 SCRIPT_DIR = os.path.abspath(__file__)
@@ -120,7 +122,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
                            aug_train=transforms,
                            aug_test=transforms)
     elif dataset_name=='ImageNet':
-        ds = datasets.ImageNet('/om2/data/public/imagenet/images_complete/ilsvrc/', 
+        ds = datasets.ImageNet(IMAGENET_PATH, 
                            mean=torch.tensor([0.48145466, 0.4578275, 0.40821073]),
                            std=torch.tensor([0.26862954, 0.26130258, 0.27577711]),
                            min_value = 0,
