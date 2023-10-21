@@ -2,7 +2,7 @@ import os
 import sys
 from robustness import datasets
 from robustness.attacker import AttackerModel
-from robustness.imagenet_models.open_ipcl import models as ipcl_models
+from robustness.imagenet_models import ipcl_models
 import torch 
 from PIL import Image
 from model_analysis_folders.all_model_info import IMAGENET_PATH

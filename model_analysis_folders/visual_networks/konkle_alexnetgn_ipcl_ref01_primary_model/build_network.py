@@ -1,7 +1,7 @@
 import os
 from robustness import datasets
 from robustness.attacker import AttackerModel
-from robustness.imagenet_models.open_ipcl import models as ipcl_models
+from robustness.imagenet_models import ipcl_models
 from robustness.imagenet_models.custom_modules import SequentialWithAllOutput
 import torch 
 from PIL import Image
