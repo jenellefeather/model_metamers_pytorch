@@ -1,11 +1,11 @@
 import os
-import sys
 from robustness import datasets
 from robustness.attacker import AttackerModel
-from robustness.imagenet_models.open_ipcl import models as ipcl_models
+from robustness.imagenet_models import ipcl_models
 from robustness.imagenet_models.custom_modules import SequentialWithAllOutput
 import torch 
 from PIL import Image
+from model_analysis_folders.all_model_info import IMAGENET_PATH
 
 import torch
 torch.backends.cudnn.benchmark = True
@@ -48,7 +48,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     model, transforms = ipcl_models.ipcl1(no_embedding=True)
     model.to(device)
 
-    ds = datasets.ImageNet('/om2/data/public/imagenet/images_complete/ilsvrc/', # '/om2/data/public/imagenet/images_complete/ilsvrc/',
+    ds = datasets.ImageNet(IMAGENET_PATH,
                        mean=model.config['mean'],
                        std=model.config['std'],
                        min_value = 0,
@@ -62,7 +62,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     ds.init_noise_mean = 0.5
 
     # Add on the classifier layer. 
-    linear_ckpt_path = '/net/oms.ib.cluster/om4/group/mcdermott/user/jfeather/projects/robust_audio_networks/model_training_directory/imagenet_networks/ipcl_model_01_alexnet_fc7_ipcl_training_head/weights/ipcl1_fc7_lincls_onecycle.pth.tar'
+    linear_ckpt_path = '../pytorch_checkpoints/ipcl_model_01_alexnet_fc7_ipcl_training_head_ipcl1_fc7_lincls_onecycle.pth.tar'
     checkpoint_linear_classifier = torch.load(linear_ckpt_path)
     in_features = 4096
     linear_model = LinearReadout(in_features, num_classes=1000)

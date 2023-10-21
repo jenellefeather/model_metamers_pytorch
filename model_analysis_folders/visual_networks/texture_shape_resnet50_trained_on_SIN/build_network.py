@@ -2,8 +2,8 @@ import sys
 from robustness import datasets
 from robustness.attacker import AttackerModel
 from robustness.model_utils import make_and_restore_model
+from model_analysis_folders.all_model_info import IMAGENET_PATH
 
-# Make a custom build script for audio_rep_training_cochleagram_1/l2_p1_robust_training
 def build_net(ds_kwargs={}, return_metamer_layers=False):
     # We need to build the dataset so that the number of classes and normalization 
     # is set appropriately. You do not need to use this data for eval/metamer generation
@@ -25,7 +25,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False):
          'final'
     ]
 
-    ds = datasets.ImageNet('/om2/data/public/imagenet/images_complete/ilsvrc/')
+    ds = datasets.ImageNet(IMAGENET_PATH)
 
     model, _ = make_and_restore_model(arch='texture_shape_resnet50_trained_on_SIN', dataset=ds, 
                                       pytorch_pretrained=True, parallel=False)

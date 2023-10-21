@@ -2,14 +2,14 @@ import os
 import sys
 from robustness import datasets
 from robustness.attacker import AttackerModel
-from robustness.imagenet_models.open_ipcl import models as ipcl_models
+from robustness.imagenet_models import ipcl_models
 import torch 
 from PIL import Image
+from model_analysis_folders.all_model_info import IMAGENET_PATH
 
 import torch
 torch.backends.cudnn.benchmark = True
 
-# Make a custom build script for audio_rep_training_cochleagram_1/l2_p1_robust_training
 def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'):
     # We need to build the dataset so that the number of classes and normalization 
     # is set appropriately. You do not need to use this data for eval/metamer generation
@@ -32,7 +32,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     model, transforms = ipcl_models.ipcl12()
     model.to(device)
 
-    ds = datasets.ImageNet('/om2/data/public/imagenet/images_complete/ilsvrc/', # '/om2/data/public/imagenet/images_complete/ilsvrc/',
+    ds = datasets.ImageNet(IMAGENET_PATH,
                        mean=model.config['mean'],
                        std=model.config['std'],
                        min_value = 0,
