@@ -3,14 +3,13 @@ from robustness import datasets
 from robustness.attacker import AttackerModel
 from robustness.model_utils import make_and_restore_model
 import torch
+from model_analysis_folders.all_model_info import IMAGENET_PATH
 torch.backends.cudnn.benchmark = True
 
-# Make a custom build script for audio_rep_training_cochleagram_1/l2_p1_robust_training
 def build_net(ds_kwargs={}, return_metamer_layers=False):
     # We need to build the dataset so that the number of classes and normalization 
     # is set appropriately. You do not need to use this data for eval/metamer generation
 
-    # Resnet50 Layers Used for Metamer Generation
     metamer_layers = [
          'input_after_preproc',
          'patch_embed',
@@ -23,10 +22,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False):
          'final'
     ]
 
-    ds = datasets.ImageNet('/om2/data/public/imagenet/images_complete/ilsvrc/')
-    # TODO: Get other augmentations? 
-
-#     ckpt_path = '../pytorch_checkpoints/resnet50_byol.pt'
+    ds = datasets.ImageNet(IMAGENET_PATH)
     ckpt_path = None
     model, _ = make_and_restore_model(arch='vit_large_patch16_224', dataset=ds, resume_path=ckpt_path,
                                       pytorch_pretrained=True, parallel=False, strict=True, 
