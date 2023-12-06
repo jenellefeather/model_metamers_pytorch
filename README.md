@@ -43,6 +43,9 @@ Installation Guide
 The python module versions used for the analysis in Feather et al. 2023 are output into [feather_metamers_conda_2022.yml](feather_metamers_conda_2022.yml). Using conda, this environment can be created with the following: 
 `conda env create -f feather_metamers_conda_2022.yml`
 
+A `.yml` file containing dependencies for newer models can be found here (also, try this if packages are no longer available from the original file).  
+`yml_files_for_dependencies/feather_metamers_conda_2023_updated_for_new_model_requirements.yml`
+
 Currently, the repository is not set up for pip installation.
 
 ANOVA statistics were performed in MATLAB 2021a (not included in the conda installation). 
