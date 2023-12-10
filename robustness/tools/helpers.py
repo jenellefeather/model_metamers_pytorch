@@ -86,12 +86,12 @@ def accuracy(output, target, topk=(1,), exact=False):
 
         _, pred = output.topk(maxk, 1, True, True)
         pred = pred.t()
-        correct = pred.eq(target.view(1, -1).expand_as(pred))
+        correct = pred.eq(target.reshape(1, -1).expand_as(pred))
 
         res = []
         res_exact = []
         for k in topk:
-            correct_k = correct[:k].view(-1).float()
+            correct_k = correct[:k].reshape(-1).float()
             ck_sum = correct_k.sum(0, keepdim=True)
             res.append(ck_sum.mul_(100.0 / batch_size))
             res_exact.append(correct_k)
