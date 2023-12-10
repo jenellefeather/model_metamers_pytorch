@@ -6,7 +6,6 @@ from pathlib import Path
 from torchvision import transforms
 
 from .alexnet_gn import *
-from .resnet import *
 
 url_root = "https://visionlab-pretrainedmodels.s3.amazonaws.com"
 
