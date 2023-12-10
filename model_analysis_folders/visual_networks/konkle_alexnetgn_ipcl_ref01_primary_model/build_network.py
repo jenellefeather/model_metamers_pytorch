@@ -5,7 +5,7 @@ from robustness.imagenet_models import ipcl_models
 from robustness.imagenet_models.custom_modules import SequentialWithAllOutput
 import torch 
 from PIL import Image
-from model_analysis_folders.all_model_info import IMAGENET_PATH
+from model_analysis_folders.all_model_info import IMAGENET_PATH, MODEL_BASE_PATH
 
 import torch
 torch.backends.cudnn.benchmark = True
