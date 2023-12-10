@@ -29,7 +29,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False):
 
     ds = datasets.ImageNet(IMAGENET_PATH)
 
-    ckpt_path = '../pytorch_checkpoints/swsl_resnet50.pt'
+    ckpt_path = os.path.join(MODEL_BASE_PATH, 'visual_networks', 'pytorch_checkpoints', 'swsl_resnet50.pt')
 
     change_prefix_checkpoint = {'model.module.':'model.', 'attacker.model.module':'attacker.model'}
     remap_checkpoint_keys = {}
