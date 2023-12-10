@@ -5,9 +5,7 @@ import torch.nn as nn
 from IPython.core.debugger import set_trace
 
 import sys
-# TODO: change to not be a direct path
-sys.path.append('/om4/group/mcdermott/user/jfeather/projects/robust_audio_networks/robustness/robustness/imagenet_models')
-from custom_modules import FakeReLU, SequentialWithArgs
+from robustness.imagenet_models.custom_modules import FakeReLU, SequentialWithArgs
 
 __all__ = ['alexnet_gn']
 
