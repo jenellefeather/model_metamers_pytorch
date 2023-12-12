@@ -32,18 +32,18 @@ def accuracy(output, target, topk=(1,)):
     return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
 
 class CLIPModelWithLabels(torch.nn.Module):
-    def __init__(self, clip_model):
+    def __init__(self, clip_model, device='cpu'):
         super(CLIPModelWithLabels, self).__init__()
         self.input_resolution = clip_model.visual.input_resolution
         self.vision_embedding = clip_model.visual
-        print(self.vision_embedding)
-        if os.path.exists('zeroshot_weights.pt'):
-            zeroshot_weights = torch.load('zeroshot_weights.pt')
+        self.device_placement=device
+        if os.path.exists(os.path.join(os.path.dirname(SCRIPT_DIR), 'zeroshot_weights.pt')):
+            zeroshot_weights = torch.load(os.path.join(os.path.dirname(SCRIPT_DIR), 'zeroshot_weights.pt'))
         else:
             zeroshot_weights = self.zeroshot_classifier(clip_model,
                                                              imagenet_classes,
                                                              imagenet_templates)
-            torch.save(zeroshot_weights, 'zeroshot_weights.pt')
+            torch.save(zeroshot_weights, os.path.join(os.path.dirname(SCRIPT_DIR), 'zeroshot_weights.pt'))
         self.register_buffer('zeroshot_weights', zeroshot_weights)
 
     def zeroshot_classifier(self, model, classnames, templates):
@@ -51,7 +51,7 @@ class CLIPModelWithLabels(torch.nn.Module):
             zeroshot_weights = []
             for classname in tqdm(classnames):
                 texts = [template.format(classname) for template in templates] #format with class
-                texts = clip.tokenize(texts)# .cuda() #tokenize
+                texts = clip.tokenize(texts).to(self.device_placement)# .cuda() #tokenize
                 class_embeddings = model.encode_text(texts) #embed with text encoder
                 class_embeddings /= class_embeddings.norm(dim=-1, keepdim=True)
                 class_embedding = class_embeddings.mean(dim=0)
@@ -98,10 +98,10 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     ]
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model, preprocess = clip.load("RN50", device=torch.device("cpu"), jit=False)
+    model, preprocess = clip.load("RN50", device=device, jit=False)# torch.device("cpu"), jit=False)
     model.to(device)
 
-    model = CLIPModelWithLabels(model)
+    model = CLIPModelWithLabels(model, device=device)
 
     n_px = model.input_resolution
     transforms = Compose([
