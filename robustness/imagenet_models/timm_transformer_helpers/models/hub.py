@@ -12,9 +12,9 @@ try:
 except ImportError:
     from torch.hub import _get_torch_home as get_dir
 
-# from timm import __version__
 try:
     from huggingface_hub import HfApi, HfFolder, Repository, hf_hub_download, hf_hub_url
+    from timm import __version__
     hf_hub_download = partial(hf_hub_download, library_name="timm", library_version=__version__)
     _has_hf_hub = True
 except ImportError:

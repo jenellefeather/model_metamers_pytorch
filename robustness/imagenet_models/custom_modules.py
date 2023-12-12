@@ -105,3 +105,32 @@ class SequentialWithArgs(torch.nn.Sequential):
             else:
                 input = vs[i](input)
         return input
+
+class SequentialWithAllOutput(torch.nn.Sequential):
+    def forward(self, input, *args, **kwargs):
+        vs = list(self._modules.values())
+        l = len(vs)
+        if kwargs.get('with_latent', False):
+            for i in range(l):
+                if i == 0:
+                    input, _, all_outputs = vs[i](input, *args, **kwargs)
+                elif i == l-1:
+                    input, pre_out, all_outputs_new = vs[i](input, *args, **kwargs)
+                    all_outputs = self._append_all_outputs(all_outputs, all_outputs_new)
+                else:
+                    input, _, all_outputs_new = vs[i](input, *args, **kwargs)
+                    all_outputs = self._append_all_outputs(all_outputs, all_outputs_new)
+            return input, pre_out, all_outputs
+        else:
+            for i in range(l):
+                input = vs[i](input)
+            return input
+
+    def _append_all_outputs(self, all_outputs, all_outputs_new):
+        for key in all_outputs_new:
+            if key in all_outputs:
+                raise ValueError('Specifying two key names for parts of ' \
+                                 'all_outputs that are the same')
+            all_outputs[key] = all_outputs_new[key]
+        return all_outputs
+

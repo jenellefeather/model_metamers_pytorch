@@ -5,7 +5,7 @@ from robustness.imagenet_models import ipcl_models
 from robustness.imagenet_models.custom_modules import SequentialWithAllOutput
 import torch 
 from PIL import Image
-from model_analysis_folders.all_model_info import IMAGENET_PATH
+from model_analysis_folders.all_model_info import IMAGENET_PATH, MODEL_BASE_PATH
 
 import torch
 torch.backends.cudnn.benchmark = True
@@ -62,7 +62,10 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     ds.init_noise_mean = 0.5
 
     # Add on the classifier layer. 
-    linear_ckpt_path = '../pytorch_checkpoints/ipcl_model_01_alexnet_fc7_ipcl_training_head_ipcl1_fc7_lincls_onecycle.pth.tar'
+    linear_ckpt_path = os.path.join(MODEL_BASE_PATH, 
+                                    'visual_networks',
+                                    'pytorch_checkpoints',
+                                    'ipcl_model_01_alexnet_fc7_ipcl_training_head_ipcl1_fc7_lincls_onecycle.pth.tar')
     checkpoint_linear_classifier = torch.load(linear_ckpt_path)
     in_features = 4096
     linear_model = LinearReadout(in_features, num_classes=1000)

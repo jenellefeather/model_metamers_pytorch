@@ -1,10 +1,11 @@
+import os
 import sys
 from robustness import datasets
 from robustness.attacker import AttackerModel
 from robustness.model_utils import make_and_restore_model
 import torch
 torch.backends.cudnn.benchmark = True
-from model_analysis_folders.all_model_info import IMAGENET_PATH
+from model_analysis_folders.all_model_info import IMAGENET_PATH, MODEL_BASE_PATH
 
 def build_net(ds_kwargs={}, return_metamer_layers=False):
     # We need to build the dataset so that the number of classes and normalization 
@@ -29,7 +30,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False):
 
     ds = datasets.ImageNet(IMAGENET_PATH)
 
-    ckpt_path = '../pytorch_checkpoints/swsl_resnet50.pt'
+    ckpt_path = os.path.join(MODEL_BASE_PATH, 'visual_networks', 'pytorch_checkpoints', 'swsl_resnet50.pt')
 
     change_prefix_checkpoint = {'model.module.':'model.', 'attacker.model.module':'attacker.model'}
     remap_checkpoint_keys = {}
