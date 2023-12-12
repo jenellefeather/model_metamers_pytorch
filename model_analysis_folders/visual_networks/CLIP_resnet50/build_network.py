@@ -98,7 +98,7 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
     ]
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model, preprocess = clip.load("RN50", device=device, jit=False)# torch.device("cpu"), jit=False)
+    model, preprocess = clip.load("RN50", device=device, jit=False)
     model.to(device)
 
     model = CLIPModelWithLabels(model, device=device)
