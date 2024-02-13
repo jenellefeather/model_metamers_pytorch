@@ -1,6 +1,5 @@
 import sys
 import os
-import make_behavioral_plots
 import argparse
 import build_network
 from torchvision import transforms
