@@ -177,20 +177,29 @@ class ApplyFiltInFourier2D(nn.Module):
 
     # TODO: update to work with pytorch>1.8 which uses complex multiplication
     def forward(self, x):
-        if self.use_rfft:
-            x = x.squeeze(dim=1)
-            x_fft = ch.rfft(x, 2, onesided=False).unsqueeze(1) # Add channel dim
-        else:
-            x = x.squeeze(dim=1)
-            # Add imaginary component for the full fft
-            x = ch.stack([x, ch.zeros(x.shape)], dim=-1)
-            x_fft = ch.fft(x, 2).unsqueeze(1) # Add channel dim
+        if "torch.fft" not in sys.modules:
+            if self.use_rfft:
+                x = x.squeeze(dim=1)
+                x_fft = ch.rfft(x, 2, onesided=False).unsqueeze(1) # Add channel dim
+            else:
+                x = x.squeeze(dim=1)
+                # Add imaginary component for the full fft
+                x = ch.stack([x, ch.zeros(x.shape)], dim=-1)
+                x_fft = ch.fft(x, 2).unsqueeze(1) # Add channel dim
+        else: # For pytorch > 1.8, don't use rfft because it no longer supports onesided=False
+            x_fft = ch.fft.fft2(x) # rfft2 works on the last two dimension
+            x_fft = ch.view_as_real(x_fft)
 
         # Apply the filter to the signal
         filtered_signal = self._complex_multiplication2D(x_fft, self.all_Hts)
 
         # After filtering we might not have a purely real signal so we have to use ifft
-        filtered_signal = ch.ifft(filtered_signal, 2)
+        if "torch.fft" not in sys.modules:       
+            filtered_signal = ch.ifft(filtered_signal, 2)
+        else:
+            filtered_signal = ch.view_as_complex(filtered_signal)
+            filtered_signal = ch.fft.ifft2(filtered_signal)
+            filtered_signal = ch.view_as_real(filtered_signal)
 
         filtered_signal = filtered_signal[:,:,:self.N_F,:self.N_T]
        
