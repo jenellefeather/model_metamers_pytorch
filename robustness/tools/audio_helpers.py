@@ -23,6 +23,8 @@ def load_audio_wav_resample(audio_path, DUR_SECS = 2, resample_SR = 16000, START
 
     """
     SR, audio = scipy.io.wavfile.read(audio_path)
+    if audio.dtype in ['int16', 'int32']:
+        audio = audio.astype(np.float32)
     if DUR_SECS!='full':
         if (len(audio))/SR<DUR_SECS:
             print("PROBLEM WITH LOAD AUDIO WAV: The sound is only %d second while you requested %d seconds long"%(int((len(audio))/SR), DUR_SECS))
