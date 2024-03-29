@@ -127,7 +127,7 @@ n_stim = voxel_data_all.shape[0]
 if sys.version[0] == '2': 
     roi_masks = pickle.load(open(os.path.join(fMRI_DATA_PATH, 'roi_masks.cpy'),'rb'))
 else: 
-    roi_masks = pickle.load(open(os.path.join(fMRI_DATA_PATH, 'roi_masks.cpy','rb')), encoding='latin1')
+    roi_masks = pickle.load(open(os.path.join(fMRI_DATA_PATH, 'roi_masks.cpy'),'rb'), encoding='latin1')
 
 r2_voxels = np.empty([voxel_data.shape[1], num_random_splits])
 alphas = np.empty([voxel_data.shape[1], num_random_splits])
