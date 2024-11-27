@@ -101,7 +101,8 @@ def build_net(ds_kwargs={}, return_metamer_layers=False, dataset_name='ImageNet'
 
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model, preprocess = clip.load("ViT-B/32", device=device, jit=False)
+    # Build the model on the CPU, which will make sure that the floats are float32
+    model, preprocess = clip.load("ViT-B/32", device=torch.device("cpu"), jit=False)
     model.to(device)
 
     model = CLIPModelWithLabels(model, device=device)
