@@ -66,7 +66,7 @@ class BottleneckVOne(nn.Conv2d):
         if with_latent:
             all_outputs = {}
             all_outputs['input_bottleneck'] = x
-        x = self._conv_forward(x, self.weight)
+        x = self._conv_forward(x, self.weight, self.bias)
         if with_latent:
             all_outputs['bottleneck'] = x
         if with_latent:
